@@ -78,8 +78,6 @@ Live-Deployment dieses Decks:
 - **HTML:** <https://byte5ai.github.io/meetups/2026-05-13-openclaw-hackathon-1/>
 - **PDF:** <https://byte5ai.github.io/meetups/2026-05-13-openclaw-hackathon-1/deck.pdf>
 
-Build & Deploy: gemeinsamer Workflow im Monorepo-Root — siehe `CLAUDE.md` und `README.md` von `byte5ai/meetups`.
-
 ## Host
 
 **Marcel Wege** · CTO @ byte5 · [mwege@byte5.de](mailto:mwege@byte5.de)
