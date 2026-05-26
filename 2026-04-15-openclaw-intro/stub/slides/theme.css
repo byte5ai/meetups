@@ -1,0 +1,475 @@
+/* @theme byte5
+ *
+ * Marp-Theme nach byte5 Design System.
+ * Quelle: ~/Downloads/byte5 Design System (colors_and_type.css, README.md)
+ *
+ * Kerntoken:
+ *   --b5-blau         #009FE3   Primary
+ *   --b5-blau-dunkel  #004B73   Text / Headlines / Dark Surfaces
+ *   --b5-magenta      #EA5172   Highlight (sparsam, ":" Device)
+ *   --font-display    Days One       (Headlines, sehr sparsam)
+ *   --font-text       Nunito Sans    (Body, Web-Fallback fuer Avenir Next)
+ */
+
+@import 'default';
+@import url('https://fonts.googleapis.com/css2?family=Days+One&family=Nunito+Sans:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --b5-blau:        #009FE3;
+  --b5-blau-dunkel: #004B73;
+  --b5-magenta:     #EA5172;
+  --b5-weiss:       #FFFFFF;
+
+  --gray-50:  #F4F7FA;
+  --gray-100: #E8EEF3;
+  --gray-200: #D3DDE5;
+  --gray-300: #B4C2CD;
+  --gray-500: #5F6E7B;
+  --gray-700: #283540;
+  --gray-800: #15212B;
+
+  --font-display: 'Days One', 'Nunito Sans', system-ui, sans-serif;
+  --font-text:    'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --shadow-sm: 0 2px 6px rgba(0, 75, 115, 0.08);
+  --shadow-md: 0 8px 24px rgba(0, 75, 115, 0.10);
+}
+
+/* ============================================================
+   Slide-Container — 16:9, weicher Cyan-Verlauf als Default-BG
+   ============================================================ */
+section {
+  width: 1280px;
+  height: 720px;
+  /* Top-Padding 96px = konsistente Distanz zwischen Eyebrow-Header
+     (sitzt absolute bei top:36px, ~17px hoch → endet bei ~53px) und
+     erster Headline. Gilt fuer ALLE Content-Slides; title/divider
+     ueberschreiben separat. */
+  padding: 96px 96px 80px;
+  font-family: var(--font-text);
+  font-size: 24px;
+  line-height: 1.5;
+  color: var(--b5-blau-dunkel);
+  background:
+    radial-gradient(120% 80% at 0% 0%, #B7E5F8 0%, #E8F2F8 60%, #F4F7FA 100%);
+  position: relative;
+  letter-spacing: -0.005em;
+}
+
+/* Permanenter Signet-Marker oben rechts (markenidentitaet, dezent).
+   ACHTUNG: Marp-Default-Theme enthaelt
+     section:not([data-marpit-pagination])::after { display: none }
+   was bei `paginate: false` UNSER Signet mit ausblendet. Daher
+   explizit `display: block !important` setzen. */
+section::after {
+  display: block !important;
+  content: '' !important;
+  position: absolute !important;
+  top: 32px !important;
+  right: 40px !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 56px !important;
+  height: 56px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: url('assets/byte5-signet-cyan.png') no-repeat center / contain !important;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* Marp-Pagination wird global ueber `paginate: false` im Frontmatter
+   deaktiviert. Bewusst kein zusaetzliches CSS-Override hier, damit
+   `section::after` ausschliesslich vom Signet (siehe oben) belegt bleibt. */
+
+footer {
+  position: absolute;
+  bottom: 28px; left: 96px;
+  font-family: var(--font-text);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+
+header {
+  position: absolute;
+  top: 36px; left: 96px;
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--b5-blau-dunkel);  /* Navy fuer Kontrast auf cyan-getoentem Gradient */
+}
+
+/* ============================================================
+   Typografie
+   ============================================================ */
+h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 56px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--b5-blau-dunkel);
+  margin: 0 0 24px;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.2;
+  color: var(--b5-blau-dunkel);
+  margin: 0 0 24px;
+}
+
+h3 {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.3;
+  color: var(--b5-blau-dunkel);
+  margin: 0 0 12px;
+}
+
+p, li { color: var(--gray-700); }
+strong { color: var(--b5-blau-dunkel); font-weight: 700; }
+em     { font-style: normal; color: var(--b5-magenta); font-weight: 700; }
+
+/* Magenta-Doppelpunkt-Device — in Markdown via inline span <span class="b5-colon">:</span> */
+.b5-colon {
+  color: var(--b5-magenta);
+  font-weight: 900;
+  margin-right: 0.4em;
+}
+
+/* ============================================================
+   Kontext-Badges (Pill-Shape) — Docker / VPS / beide
+   Verwendung: <span class="badge badge-docker">Docker</span>
+   ============================================================ */
+.badge {
+  display: inline-block;
+  padding: 2px 14px;
+  border-radius: 9999px;
+  font-family: var(--font-text);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  vertical-align: 0.18em;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+.badge-docker { background: var(--b5-blau);        color: var(--b5-weiss); }
+.badge-vps    { background: var(--b5-magenta);     color: var(--b5-weiss); }
+.badge-both   { background: var(--gray-200);       color: var(--b5-blau-dunkel); }
+
+/* Eyebrow ueber dem Titel — Default Navy fuer Content-Slides;
+   Title-Slide ueberschreibt unten auf Cyan (lebt auf dunklem BG). */
+.eyebrow {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--b5-blau-dunkel);
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* ============================================================
+   Listen — Cyan-Check als Bullet
+   ============================================================ */
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+ul li {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 12px;
+}
+ul li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.55em;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--b5-blau);
+}
+
+ol { padding-left: 28px; }
+ol li::marker { color: var(--b5-blau); font-weight: 700; }
+
+/* ============================================================
+   Code
+   ============================================================ */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--gray-100);
+  color: var(--b5-blau-dunkel);
+  padding: 0.12em 0.4em;
+  border-radius: 4px;
+}
+pre {
+  background: var(--b5-blau-dunkel);
+  color: #E6F5FC;
+  padding: 20px 24px;
+  border-radius: 14px;
+  font-size: 18px;
+  line-height: 1.5;
+  box-shadow: var(--shadow-md);
+  /* HINWEIS: max-height + overflow:auto greift in Marp's foreignObject
+     nicht zuverlaessig (data-auto-scaling laesst's trotzdem ueberlaufen).
+     Pragmatisch: bei langen Code-Blocks Slide splitten. */
+  overflow: hidden;
+  position: relative;  /* Anker fuer Copy-Button-Overlay */
+}
+
+/* Copy-to-Clipboard Button — wird per Marp-Engine in jedes <pre>
+   eingefuegt. Standardmaessig sichtbar (Demo-Wert), beim Hover
+   intensiver. */
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: rgba(230, 245, 252, 0.10);
+  color: #E6F5FC;
+  border: 1px solid rgba(230, 245, 252, 0.18);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+pre:hover .copy-btn   { opacity: 1; }
+.copy-btn:hover       { background: rgba(230, 245, 252, 0.20); border-color: rgba(230, 245, 252, 0.38); }
+.copy-btn.copied      { background: var(--b5-magenta); border-color: var(--b5-magenta); color: #FFFFFF; opacity: 1; }
+
+/* PDF-Build (Chromium print media): Copy-Buttons ausblenden — sind im
+   statischen PDF eh wertlos und stoeren das Layout. */
+@media print {
+  .copy-btn { display: none !important; }
+}
+
+/* Dezenter Scrollbar im byte5-Stil — sichtbar nur bei Hover */
+pre::-webkit-scrollbar       { width: 8px; height: 8px; }
+pre::-webkit-scrollbar-track { background: transparent; }
+pre::-webkit-scrollbar-thumb {
+  background: rgba(230, 245, 252, 0.18);
+  border-radius: 4px;
+}
+pre:hover::-webkit-scrollbar-thumb { background: rgba(230, 245, 252, 0.42); }
+pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* ============================================================
+   Syntax-Highlighting (highlight.js) — Token-Overrides
+   Marp verwendet hljs-Default; die hljs-attr/keyword-Farben sind
+   klassisch dunkelblau und damit auf unserem Navy-BG unlesbar.
+   Hier: byte5-konforme Akzentfarben mit garantiertem Kontrast.
+   ============================================================ */
+pre code.hljs,
+pre .hljs                                 { color: #E6F5FC; background: transparent; }
+pre .hljs-comment,
+pre .hljs-quote                           { color: #8A99A6; font-style: italic; }
+pre .hljs-attr,
+pre .hljs-tag,
+pre .hljs-section,
+pre .hljs-selector-tag,
+pre .hljs-keyword,
+pre .hljs-meta                            { color: #F6A5B6; font-weight: 600; }
+pre .hljs-string,
+pre .hljs-symbol,
+pre .hljs-link                            { color: #A6DEF5; }
+pre .hljs-variable,
+pre .hljs-template-variable,
+pre .hljs-built_in,
+pre .hljs-literal,
+pre .hljs-params                          { color: #7CC8EB; }
+pre .hljs-number                          { color: #E0A82E; }
+pre .hljs-title,
+pre .hljs-name,
+pre .hljs-type                            { color: #E6F5FC; font-weight: 700; }
+pre .hljs-punctuation                     { color: #B4C2CD; }
+/* Substitutions ($(...) in Strings, `cmd` Backticks) — sollen aus dem
+   String-Farbton herausstechen, damit das Auge den ausgefuehrten Teil
+   findet. Hellgelb = klar lesbar auf navy + gegen Cyan-String. */
+pre .hljs-subst,
+pre .hljs-regexp                          { color: #FFE8A8; font-weight: 600; }
+
+/* Markdown-Tokens innerhalb von ```markdown Blocks. Default-hljs-Farben
+   sind dunkel — auf unserem Navy-BG unlesbar. Hier: weisser Text mit Bold
+   fuer **strong**, kursiv fuer *em*, soft-grau fuer Bullets/Code-Marker. */
+pre .hljs-strong                          { color: #F6A5B6; font-weight: 700; }
+pre .hljs-emphasis                        { color: #E6F5FC; font-style: italic; }
+pre .hljs-bullet                          { color: #F6A5B6; font-weight: 600; }
+pre .hljs-code,
+pre .hljs-formula                         { color: #A6DEF5; }
+pre .hljs-doctag                          { color: #F6A5B6; font-weight: 600; }
+
+/* ============================================================
+   Tabellen
+   ============================================================ */
+table {
+  display: table !important;          /* Marp-Default setzt display:block */
+  width: 100% !important;             /* Marp-Default setzt width:max-content */
+  max-width: none !important;
+  table-layout: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 18px;
+  background: var(--b5-weiss);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+th {
+  background: var(--b5-blau-dunkel);
+  color: var(--b5-weiss);
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+td {
+  padding: 10px 16px;
+  border-top: 1px solid var(--gray-100);
+  color: var(--gray-700);
+}
+
+/* ============================================================
+   Zitat — als magenta linksrandiger Block
+   ============================================================ */
+blockquote {
+  border-left: 4px solid var(--b5-magenta);
+  padding: 8px 24px;
+  margin: 16px 0;
+  color: var(--b5-blau-dunkel);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ============================================================
+   Title-Slide — invers, Wordmark statt Signet
+   ============================================================ */
+section.title {
+  background:
+    linear-gradient(135deg, var(--b5-blau-dunkel) 0%, #003957 100%);
+  color: var(--b5-weiss);
+  padding: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+section.title::after {
+  display: block !important;
+  content: '' !important;
+  background: url('assets/byte5-logo-white.png') no-repeat center / contain !important;
+  width: 140px !important;
+  height: 56px !important;
+  opacity: 1;
+  top: 48px !important;
+  right: 64px !important;
+  bottom: auto !important;
+  padding: 0 !important;
+}
+section.title h1 {
+  color: var(--b5-weiss);
+  font-size: 72px;
+}
+section.title h2 {
+  color: var(--b5-blau);
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: 28px;
+  margin-top: 12px;
+}
+section.title p,
+section.title .eyebrow {
+  color: var(--b5-weiss);
+  opacity: 0.75;
+}
+section.title .eyebrow { color: var(--b5-blau); opacity: 1; }
+
+/* ============================================================
+   Phase-Slides — kleiner Phasen-Indikator oben
+   ============================================================ */
+section.phase header {
+  color: var(--b5-magenta);
+}
+section.phase .phase-bar {
+  position: absolute;
+  top: 0; left: 0;
+  height: 6px;
+  background: var(--b5-blau);
+}
+/* 10-Phasen-Deck — Progress in 10%-Schritten */
+section.phase-1  .phase-bar { width: 10%;  }
+section.phase-2  .phase-bar { width: 20%;  }
+section.phase-3  .phase-bar { width: 30%;  }
+section.phase-4  .phase-bar { width: 40%;  }
+section.phase-5  .phase-bar { width: 50%;  }
+section.phase-6  .phase-bar { width: 60%;  }
+section.phase-7  .phase-bar { width: 70%;  }
+section.phase-8  .phase-bar { width: 80%;  }
+section.phase-9  .phase-bar { width: 90%;  }
+section.phase-10 .phase-bar { width: 100%; }
+
+/* ============================================================
+   Section-Divider — grosse Aussage, magenta-Akzent
+   ============================================================ */
+section.divider {
+  background: var(--b5-blau-dunkel);
+  color: var(--b5-weiss);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+section.divider h1 {
+  color: var(--b5-weiss);
+  font-size: 64px;
+}
+section.divider h1::first-letter { color: var(--b5-magenta); }
+section.divider::after {
+  display: block !important;
+  content: '' !important;
+  background: url('assets/byte5-logo-white.png') no-repeat center / contain !important;
+  width: 120px !important;
+  height: 48px !important;
+  top: 48px !important;
+  right: 64px !important;
+  bottom: auto !important;
+  padding: 0 !important;
+}
+
+/* ============================================================
+   Resources / Closing
+   ============================================================ */
+section.closing h1 { color: var(--b5-blau-dunkel); }
+section.closing a { color: var(--b5-blau); border-bottom: 1px solid currentColor; text-decoration: none; }
+
+/* ============================================================
+   Two-column helper — Marp Markdown unterstuetzt nicht direkt
+   Spalten; wir nutzen einen ::columns CSS-Trick via class.
+   ============================================================ */
+section.cols .columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}

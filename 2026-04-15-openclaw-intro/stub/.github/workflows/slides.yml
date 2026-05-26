@@ -1,0 +1,71 @@
+name: Deploy slides to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'slides/**'
+      - '.github/workflows/slides.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Marp engine deps
+        run: npm install --no-save @marp-team/marp-core
+
+      - name: Build slides (HTML)
+        run: |
+          mkdir -p dist
+          npx --yes @marp-team/marp-cli@latest slides/deck.md \
+            --html --allow-local-files \
+            --engine ./slides/marp-engine.js \
+            --theme-set slides/theme.css \
+            --output dist/index.html
+
+      - name: Copy slide assets
+        run: cp -R slides/assets dist/assets
+
+      - name: Build slides (PDF)
+        run: |
+          npx --yes @marp-team/marp-cli@latest slides/deck.md \
+            --pdf --allow-local-files \
+            --engine ./slides/marp-engine.js \
+            --theme-set slides/theme.css \
+            --output dist/deck.pdf
+
+      - name: Write fallback landing
+        run: |
+          cat > dist/404.html <<'EOF'
+          <!doctype html><meta http-equiv="refresh" content="0; url=./">
+          EOF
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,29 @@
+# Lean Local Stack — fuer Teilnehmer zum Lokal-Ausprobieren.
+# Bewusst kein Build-Toolchain, kein Ubuntu-Userland — nur das,
+# was OpenClaw zur Laufzeit wirklich braucht.
+#
+# Baut auf dem offiziellen node:24-slim (Debian Bookworm Slim) auf,
+# Image-Groesse ~250 MB statt ~1 GB beim VPS-Simulator.
+
+FROM node:24-slim
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        ca-certificates git ffmpeg python3 tini curl \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g openclaw@latest \
+ && openclaw --version
+
+WORKDIR /root
+
+# Eigener Entrypoint startet den Gateway als PID 1 (gleiche Story wie
+# beim VPS-Simulator-Image). tini bleibt als Init-Wrapper davor, damit
+# Signals + Zombie-Reaping sauber laufen.
+COPY docker/entrypoint.sh /usr/local/bin/openclaw-entrypoint
+RUN chmod +x /usr/local/bin/openclaw-entrypoint
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/openclaw-entrypoint"]

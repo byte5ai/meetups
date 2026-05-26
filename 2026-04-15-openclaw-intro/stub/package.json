@@ -1,0 +1,16 @@
+{
+  "name": "byte5-marp-deck",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Marp Slide Deck Boilerplate mit byte5-Theme, Copy-to-Clipboard auf Code-Bloecken und GitHub-Pages-Auto-Deployment.",
+  "scripts": {
+    "dev": "marp -s --engine ./slides/marp-engine.js --html --allow-local-files slides/",
+    "build": "marp --html --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css slides/deck.md --output dist/index.html && cp -R slides/assets dist/assets",
+    "pdf": "marp --pdf --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css slides/deck.md --output dist/deck.pdf",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@marp-team/marp-cli": "^4.0.0",
+    "@marp-team/marp-core": "^4.0.0"
+  }
+}

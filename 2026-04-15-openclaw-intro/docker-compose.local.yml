@@ -1,0 +1,31 @@
+# Lean Local Stack — fuer Teilnehmer zum Lokal-Ausprobieren.
+# Start: docker compose -f docker-compose.local.yml up -d --build
+#
+# Unterschied zum Haupt-Compose (VPS-Simulator):
+# - kleineres Image (node:24-slim statt ubuntu:24.04 + Build-Tools)
+# - kein Source-Bind-Mount (OpenClaw ist global per npm vorinstalliert)
+# - Workspace-Bind-Mount bleibt, damit Skills vom Host editierbar sind
+services:
+  openclaw-local:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    image: openclaw-local:latest
+    container_name: openclaw-local
+    hostname: openclaw-local
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - openclaw-local-home:/root
+      - ./workspace:/root/.openclaw/workspace
+    ports:
+      # Gateway/Dashboard auch im Lean-Stack erreichbar machen.
+      - "127.0.0.1:18789:18789"
+    # command bewusst weggelassen — ENTRYPOINT im Image startet
+    # automatisch den Gateway oder zeigt den Onboarding-Hinweis an.
+
+volumes:
+  openclaw-local-home:

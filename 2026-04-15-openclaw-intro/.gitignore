@@ -1,0 +1,23 @@
+.env
+node_modules/
+dist/
+*.log
+.DS_Store
+
+# Bind-Mount-Targets — Laufzeitdaten / Repos
+/openclaw/
+
+# Workspace selbst ist Demo-Content (Skills + Persona-Files) und wird
+# eingecheckt. Aber: OpenClaw-internal Repo-Backup, Runtime-State und
+# Session-Memory bleiben drauüen.
+/workspace/.git/
+/workspace/.git-openclaw-internal-backup/
+/workspace/.openclaw/
+/workspace/memory/
+
+# Private Speaker-/Vorbereitungs-Notizen — nicht fuer Publikum,
+# nicht fuer ein eventuelles Public Repo
+/notes/
+
+# Slide-Build-Outputs (HTML/PDF/PPTX werden bei Bedarf neu erzeugt)
+/slides/dist/

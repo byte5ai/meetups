@@ -1,0 +1,10 @@
+.git
+.gitignore
+.env
+*.md
+node_modules
+dist
+
+# docker/ wird im Build gebraucht (entrypoint.sh) — explizit nicht ignorieren
+!docker/
+!docker/**

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- byte5-Cyan-Kreis als Basis (matcht das Signet) -->
+  <circle cx="256" cy="256" r="248" fill="#009FE3"/>
+
+  <!-- Hantel-Glyph in Weiss, mittig -->
+  <g fill="#FFFFFF">
+    <!-- Stange -->
+    <rect x="156" y="240" width="200" height="32" rx="8"/>
+    <!-- Linke Gewichte (innen + aussen) -->
+    <rect x="116" y="196" width="40" height="120" rx="10"/>
+    <rect x="76"  y="216" width="32" height="80"  rx="8"/>
+    <!-- Rechte Gewichte (innen + aussen) -->
+    <rect x="356" y="196" width="40" height="120" rx="10"/>
+    <rect x="404" y="216" width="32" height="80"  rx="8"/>
+  </g>
+
+  <!-- Magenta-Akzent oben rechts (byte5 ":" device als Punkt) -->
+  <circle cx="400" cy="120" r="36" fill="#EA5172"/>
+</svg>
