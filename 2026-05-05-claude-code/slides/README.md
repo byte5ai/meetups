@@ -28,4 +28,4 @@ npm run pdf        # PDF nach dist/deck.pdf
 ```
 
 CI baut beides automatisch beim Push nach `main` und deployt nach
-GitHub Pages — siehe `.github/workflows/slides.yml`.
+GitHub Pages — siehe Workflow im Monorepo-Root (`byte5ai/meetups`).

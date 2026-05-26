@@ -241,7 +241,7 @@ byte5-news-remix/
 
 > Config-Overlay für `non-annoying-news`. **Klonen · `config.json` auf deine Topics umbiegen · Tokens auf deine Farben.**
 
-<small>*[demos/entry/byte5-news-remix](https://github.com/byte5ai/openclaw-hackathon-1/tree/main/demos/entry/byte5-news-remix)*</small>
+<small>*[demos/entry/byte5-news-remix](https://github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1/demos/entry/byte5-news-remix)*</small>
 
 ---
 
@@ -285,7 +285,7 @@ byte5-news-remix/
 - `onboarding.complete = true` schaltet die Gate frei
 - Trigger „Render das erste Issue" → HTML zuerst, dann PDF, PNG-Previews vor Auslieferung
 
-→ Referenz: [`demos/entry/byte5-news-remix`](https://github.com/byte5ai/openclaw-hackathon-1/tree/main/demos/entry/byte5-news-remix)
+→ Referenz: [`demos/entry/byte5-news-remix`](https://github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1/demos/entry/byte5-news-remix)
 
 <small>*[non-annoying-news SKILL.md](https://github.com/iret77/non-annoying-news/blob/main/SKILL.md)*</small>
 
@@ -330,7 +330,7 @@ rss-zu-wochenbrief/
 
 > RSS-URL → 5-Bullet-Markdown. **Kopier-Vorlage für deine eigene 1-Input/1-Artefakt-Idee** — Script + Template tauschen, Pattern bleibt.
 
-<small>*[demos/intermediate/rss-zu-wochenbrief](https://github.com/byte5ai/openclaw-hackathon-1/tree/main/demos/intermediate/rss-zu-wochenbrief)*</small>
+<small>*[demos/intermediate/rss-zu-wochenbrief](https://github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1/demos/intermediate/rss-zu-wochenbrief)*</small>
 
 ---
 
@@ -371,7 +371,7 @@ rss-zu-wochenbrief/
 - `references/editorial-style.md` wird geschrieben — der Workflow-Schritt aus SKILL.md lädt sie *bei Bedarf*
 - `scripts/fetch_rss.py` mit `urllib.request` + `xml.etree.ElementTree` — kein `pip install` nötig
 
-→ Referenz: [Demo-Folder im Repo](https://github.com/byte5ai/openclaw-hackathon-1/tree/main/demos/intermediate/rss-zu-wochenbrief)
+→ Referenz: [Demo-Folder im Repo](https://github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1/demos/intermediate/rss-zu-wochenbrief)
 
 <small>*[agentskills.io](https://agentskills.io) · [docs.openclaw.ai/tools/skills](https://docs.openclaw.ai/tools/skills) — lazy-loaded references*</small>
 
@@ -437,7 +437,7 @@ daily-briefing/
 
 > `rss-zu-wochenbrief` + QA-Gate + `non-annoying-news`. **Pipeline-Pattern — andere Skills, anderes Gate, anderes Ergebnis.**
 
-<small>*[demos/expert/daily-briefing](https://github.com/byte5ai/openclaw-hackathon-1/tree/main/demos/expert/daily-briefing)*</small>
+<small>*[demos/expert/daily-briefing](https://github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1/demos/expert/daily-briefing)*</small>
 
 ---
 
@@ -480,7 +480,7 @@ daily-briefing/
 - Reference-Markdown schreibt die Regeln *menschlich lesbar* — Composer-Agent lädt sie als Kontext
 - Python-Script implementiert die Regeln *maschinell* — Exit-Code steuert die Pipeline
 
-→ Referenz: [`scripts/qa_check.py`](https://github.com/byte5ai/openclaw-hackathon-1/blob/main/demos/expert/daily-briefing/scripts/qa_check.py)
+→ Referenz: [`scripts/qa_check.py`](https://github.com/byte5ai/meetups/blob/main/2026-05-13-openclaw-hackathon-1/demos/expert/daily-briefing/scripts/qa_check.py)
 
 <small>*[docs.openclaw.ai/tools/skills](https://docs.openclaw.ai/tools/skills) — references als lazy-loaded Kontext*</small>
 
@@ -503,7 +503,7 @@ daily-briefing/
 2. `qa_check.py` läuft → `passed: true` *oder* JSON-Diagnose
 3. Bei pass: `non-annoying-news` rendert finales Issue · bei fail: Stopp + Report
 
-→ Diagramm: [`composition-diagram.md`](https://github.com/byte5ai/openclaw-hackathon-1/blob/main/demos/expert/daily-briefing/assets/composition-diagram.md)
+→ Diagramm: [`composition-diagram.md`](https://github.com/byte5ai/meetups/blob/main/2026-05-13-openclaw-hackathon-1/demos/expert/daily-briefing/assets/composition-diagram.md)
 
 <small>*[docs.openclaw.ai/tools/skills](https://docs.openclaw.ai/tools/skills)*</small>
 
@@ -667,9 +667,9 @@ Composer ohne OpenClaw — andere Primitives, gleiche Idee:
 
 <span class="eyebrow">Material zum Mitnehmen</span>
 
-- **Slides** <span class="b5-colon">:</span> [byte5ai.github.io/openclaw-hackathon-1](https://byte5ai.github.io/openclaw-hackathon-1/) · [PDF](https://byte5ai.github.io/openclaw-hackathon-1/deck.pdf)
-- **Repo** <span class="b5-colon">:</span> [github.com/byte5ai/openclaw-hackathon-1](https://github.com/byte5ai/openclaw-hackathon-1)
-- **Demo-Skills** <span class="b5-colon">:</span> [drei Levels im Repo](https://github.com/byte5ai/openclaw-hackathon-1/tree/main/demos) · Entry · Intermediate · Expert
+- **Slides** <span class="b5-colon">:</span> [byte5ai.github.io/meetups/2026-05-13-openclaw-hackathon-1](https://byte5ai.github.io/meetups/2026-05-13-openclaw-hackathon-1/) · [PDF](https://byte5ai.github.io/meetups/2026-05-13-openclaw-hackathon-1/deck.pdf)
+- **Repo** <span class="b5-colon">:</span> [github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1](https://github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1)
+- **Demo-Skills** <span class="b5-colon">:</span> [drei Levels im Repo](https://github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1/demos) · Entry · Intermediate · Expert
 - **Original-Demo** <span class="b5-colon">:</span> [github.com/iret77/non-annoying-news](https://github.com/iret77/non-annoying-news)
 - **byte5** <span class="b5-colon">:</span> [byte5.de](https://www.byte5.de)
 

@@ -75,12 +75,10 @@ slot** für eigene Ideen.
 
 Live-Deployment dieses Decks:
 
-- **HTML:** [byte5ai.github.io/openclaw-hackathon-1](https://byte5ai.github.io/openclaw-hackathon-1/)
-- **PDF:** [byte5ai.github.io/openclaw-hackathon-1/deck.pdf](https://byte5ai.github.io/openclaw-hackathon-1/deck.pdf)
+- **HTML:** <https://byte5ai.github.io/meetups/2026-05-13-openclaw-hackathon-1/>
+- **PDF:** <https://byte5ai.github.io/meetups/2026-05-13-openclaw-hackathon-1/deck.pdf>
 
-Jeder Push auf `main` mit Änderungen in `slides/**` triggert den
-Workflow [`.github/workflows/slides.yml`](.github/workflows/slides.yml)
-und deployt automatisch auf GitHub Pages.
+Build & Deploy: gemeinsamer Workflow im Monorepo-Root — siehe `CLAUDE.md` und `README.md` von `byte5ai/meetups`.
 
 ## Host
 

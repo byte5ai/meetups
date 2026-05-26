@@ -3,7 +3,7 @@
 Slide-Deck für den byte5 Tech Talk **„Claude & Claude Code — vom Chat
 zum Agenten-Stack"** von Marcel Wege.
 
-**Live:** https://byte5ai.github.io/claude-demo/ · PDF unter `/deck.pdf`
+**Live:** <https://byte5ai.github.io/meetups/2026-05-05-claude-code/> · PDF unter `/deck.pdf`
 
 ## Worum geht's?
 

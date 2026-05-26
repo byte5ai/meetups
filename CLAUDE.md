@@ -32,7 +32,6 @@ Alles wird auf https://byte5ai.github.io/meetups/ als statische Seite deployed. 
     │   └── assets/                        # Bilder, Logos, was die Slides referenzieren
     ├── package.json                       # optional: für `npm run dev` lokal
     ├── README.md                          # optional: deck-spezifische Notizen
-    ├── CLAUDE.md                          # optional: deck-spezifische Konventionen
     └── ...                                # optionales Companion-Material
 ```
 
@@ -214,7 +213,6 @@ Aus der initialen Migration gelernt — bitte nicht wiederholen:
 - **PDFs unterscheiden sich Run-zu-Run um ±50 Bytes** (Marp embeddet einen Build-Timestamp). Nicht versuchen, byte-Parität zu erzwingen — der Inhalt ist identisch.
 - **Workflow path-filter pflegen.** Bei neuem Subordner-Muster (z. B. wenn jemand `foo-2026/` statt `2026-foo/` einbringt) trigger der workflow nicht mehr automatisch. Das Pattern `*/slides/**` matched alle Top-Level-Folder mit `slides/`, ist also relativ tolerant — aber prüfe.
 - **Pages-Source nicht auf Jekyll umstellen.** Wir nutzen `build_type: workflow`. Wer das ändert, killt den Custom-Build.
-- **Die per-Subordner CLAUDE.mds** (`2026-05-05-claude-code/CLAUDE.md`, `2026-05-13-openclaw-hackathon-1/CLAUDE.md`) sind aus den Alt-Repos mit-importiert und stellenweise nicht mehr aktuell (z. B. erwähnen sie eine `.github/workflows/slides.yml` im Subordner, die wir entfernt haben). Sie sind historischer Kontext, nicht authoritativ. **Dieses File hier** (Root-`CLAUDE.md`) ist authoritativ.
 - **Quell-Repos archivieren ≠ löschen.** Nach der Migration wurden `byte5ai/{claude-demo,openclaw-demo,openclaw-hackathon-1}` archiviert (read-only). Pages bleibt live — alte URLs `byte5ai.github.io/claude-demo/` etc. funktionieren weiter als Sicherheitsnetz. **Nicht löschen ohne Einwilligung** (externe Links auf Social Media / Slides würden brechen).
 
 ## Was hier NICHT hineingehört
