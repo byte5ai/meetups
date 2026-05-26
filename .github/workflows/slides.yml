@@ -1,0 +1,100 @@
+name: Deploy meetup decks to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*/slides/**'
+      - '.github/workflows/slides.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install Marp engine deps
+        run: npm install --no-save @marp-team/marp-core
+
+      - name: Build 2026-04-15-openclaw-intro
+        run: |
+          mkdir -p dist/2026-04-15-openclaw-intro
+          npx --yes @marp-team/marp-cli@latest 2026-04-15-openclaw-intro/slides/deck.md \
+            --html --allow-local-files \
+            --engine ./2026-04-15-openclaw-intro/slides/marp-engine.js \
+            --theme-set 2026-04-15-openclaw-intro/slides/theme.css \
+            --output dist/2026-04-15-openclaw-intro/index.html
+          npx --yes @marp-team/marp-cli@latest 2026-04-15-openclaw-intro/slides/deck.md \
+            --pdf --allow-local-files \
+            --engine ./2026-04-15-openclaw-intro/slides/marp-engine.js \
+            --theme-set 2026-04-15-openclaw-intro/slides/theme.css \
+            --output dist/2026-04-15-openclaw-intro/deck.pdf
+          cp -R 2026-04-15-openclaw-intro/slides/assets dist/2026-04-15-openclaw-intro/assets
+
+      - name: Build 2026-05-05-claude-code (main deck + spec-kit sub-deck)
+        run: |
+          mkdir -p dist/2026-05-05-claude-code
+          npx --yes @marp-team/marp-cli@latest 2026-05-05-claude-code/slides/deck.md \
+            --html --allow-local-files \
+            --engine ./2026-05-05-claude-code/slides/marp-engine.js \
+            --theme-set 2026-05-05-claude-code/slides/theme.css \
+            --output dist/2026-05-05-claude-code/index.html
+          npx --yes @marp-team/marp-cli@latest 2026-05-05-claude-code/slides/deck.md \
+            --pdf --allow-local-files \
+            --engine ./2026-05-05-claude-code/slides/marp-engine.js \
+            --theme-set 2026-05-05-claude-code/slides/theme.css \
+            --output dist/2026-05-05-claude-code/deck.pdf
+          npx --yes @marp-team/marp-cli@latest 2026-05-05-claude-code/slides/spec-kit-demo.md \
+            --html --allow-local-files \
+            --engine ./2026-05-05-claude-code/slides/marp-engine.js \
+            --theme-set 2026-05-05-claude-code/slides/theme.css \
+            --output dist/2026-05-05-claude-code/spec-kit-demo.html
+          npx --yes @marp-team/marp-cli@latest 2026-05-05-claude-code/slides/spec-kit-demo.md \
+            --pdf --allow-local-files \
+            --engine ./2026-05-05-claude-code/slides/marp-engine.js \
+            --theme-set 2026-05-05-claude-code/slides/theme.css \
+            --output dist/2026-05-05-claude-code/spec-kit-demo.pdf
+          cp -R 2026-05-05-claude-code/slides/assets dist/2026-05-05-claude-code/assets
+
+      - name: Build 2026-05-13-openclaw-hackathon-1
+        run: |
+          mkdir -p dist/2026-05-13-openclaw-hackathon-1
+          npx --yes @marp-team/marp-cli@latest 2026-05-13-openclaw-hackathon-1/slides/deck.md \
+            --html --allow-local-files \
+            --engine ./2026-05-13-openclaw-hackathon-1/slides/marp-engine.js \
+            --theme-set 2026-05-13-openclaw-hackathon-1/slides/theme.css \
+            --output dist/2026-05-13-openclaw-hackathon-1/index.html
+          npx --yes @marp-team/marp-cli@latest 2026-05-13-openclaw-hackathon-1/slides/deck.md \
+            --pdf --allow-local-files \
+            --engine ./2026-05-13-openclaw-hackathon-1/slides/marp-engine.js \
+            --theme-set 2026-05-13-openclaw-hackathon-1/slides/theme.css \
+            --output dist/2026-05-13-openclaw-hackathon-1/deck.pdf
+          cp -R 2026-05-13-openclaw-hackathon-1/slides/assets dist/2026-05-13-openclaw-hackathon-1/assets
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
