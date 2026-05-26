@@ -1,0 +1,34 @@
+/*
+ * byte5 Design Tokens für non-annoying-news
+ * ------------------------------------------
+ * Drop diese Datei in den vom Skill genannten Token-Pfad
+ * (Config-Feld `design.tokensFile`).
+ *
+ * Diese Datei liefert nur CSS Custom Properties (Tokens). Welche
+ * Selektoren non-annoying-news intern verwendet, ist hier nicht
+ * gemappt — der Skill wendet sein Theme auf die Tokens an.
+ *
+ * Zum Remixen: nur die Werte unter :root anpassen.
+ */
+
+:root {
+  /* Brand-Farben */
+  --byte5-magenta:  #E6007E;
+  --byte5-cyan:     #00B8D9;
+  --byte5-ink:      #1A1A2E;
+  --byte5-paper:    #FFFFFF;
+  --byte5-mute:     #6B7280;
+  --byte5-rule:     #E5E7EB;
+
+  /* Typografie */
+  --byte5-font-heading: "Days One", "Helvetica Neue", system-ui, sans-serif;
+  --byte5-font-body:    "Nunito Sans", "Helvetica Neue", system-ui, sans-serif;
+  --byte5-font-mono:    "JetBrains Mono", "Menlo", monospace;
+
+  /* Rhythmus */
+  --byte5-line-height:   1.45;
+  --byte5-content-width: 64rem;
+  --byte5-gap-tight:     0.75rem;
+  --byte5-gap:           1.5rem;
+  --byte5-gap-loose:     3rem;
+}

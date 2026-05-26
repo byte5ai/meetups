@@ -1,0 +1,64 @@
+{
+  "newspaper": {
+    "title": "byte5 Tech Digest",
+    "subtitle": "Was wir diese Woche gelesen haben",
+    "language": "de",
+    "readerPromise": "Eine Seite Tech-Nachrichten, die das Wichtigste in einem Satz erklärt — ohne Hype, ohne Clickbait, ohne Filler-Boxen."
+  },
+  "topics": {
+    "include": [
+      "AI agents and skill ecosystems",
+      "OpenClaw, AgentSkills, ClawHub",
+      "Web platform standards (HTML, CSS, JS, ECMAScript)",
+      "Developer tooling (IDEs, terminals, LLM-assisted coding)",
+      "Open-source infrastructure",
+      "Software architecture and DX"
+    ],
+    "exclude": [
+      "Funding rounds without product news",
+      "Crypto unrelated to platform tech",
+      "Generic AI hype pieces",
+      "Personnel changes at big tech",
+      "Press releases without substance"
+    ]
+  },
+  "signals": {
+    "x_bookmarks": false,
+    "browser_reading_list": false,
+    "read_later": false,
+    "rss": [
+      "https://hnrss.org/frontpage",
+      "https://blog.byte5.de/feed/",
+      "https://www.theverge.com/rss/index.xml"
+    ],
+    "newsletters": [],
+    "web_search_topics": [
+      "openclaw new release",
+      "agentskills.io spec update"
+    ],
+    "pasted_urls": []
+  },
+  "cadence": {
+    "frequency": "weekly",
+    "day": "friday",
+    "time": "14:00",
+    "cron_enabled": false
+  },
+  "delivery": {
+    "mode": "local_html",
+    "outputDir": "./issues/",
+    "channel": null
+  },
+  "design": {
+    "preset": "byte5",
+    "density": "compact",
+    "pageDepthMax": 2,
+    "imagePolicy": "none",
+    "tokensFile": "./design-tokens.css"
+  },
+  "onboarding": {
+    "complete": true,
+    "confirmedAt": "2026-05-13",
+    "confirmedBy": "byte5-news-remix demo"
+  }
+}
