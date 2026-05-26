@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>byte5 Meetups</title>
+  <meta name="description" content="Slide decks, demo code, and companion material from byte5 meetups and tech talks.">
+  <link rel="icon" type="image/svg+xml" href="https://byte5.ai/byte5-logo-cyan.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Days+One&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #004B73;
+      --cyan: #009FE3;
+      --cyan-light: #00BDF2;
+      --pink: #EA5172;
+      --white: #FFFFFF;
+      --gray-50: #F7F8FA;
+      --gray-100: #E8ECF1;
+      --gray-200: #D1D8E0;
+      --gray-400: #8896A6;
+      --gray-900: #0A0F1A;
+      --font-heading: 'Days One', sans-serif;
+      --font-body: 'Nunito Sans', 'Avenir Next', 'Avenir', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--blue);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.55;
+    }
+    h1, h2, h3 { font-family: var(--font-heading); font-weight: 400; line-height: 1.15; margin: 0; }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { color: var(--cyan-light); }
+
+    header.site {
+      padding: 1.5rem 1.5rem 0;
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+    header.site img { height: 28px; }
+
+    main { padding: 4rem 1.5rem 6rem; max-width: 72rem; margin: 0 auto; }
+
+    .hero { text-align: center; margin-bottom: 4rem; }
+    .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      color: var(--blue);
+      margin: 1rem 0;
+    }
+    h1 .accent { color: var(--pink); }
+    .hero p {
+      font-size: 1.125rem;
+      color: var(--gray-400);
+      max-width: 36rem;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 640px)  { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .card {
+      position: relative;
+      background: var(--white);
+      border: 1px solid var(--gray-100);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 75, 115, 0.08);
+      border-color: var(--gray-200);
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(0, 159, 227, 0.3), rgba(234, 81, 114, 0.1), transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.75rem;
+      color: var(--gray-400);
+      margin-bottom: 0.25rem;
+    }
+    .card .meta .type {
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .card h2 {
+      font-size: 1.5rem;
+      color: var(--blue);
+      margin-bottom: 0.25rem;
+    }
+    .card .by {
+      font-size: 0.875rem;
+      color: var(--gray-400);
+    }
+    .card .desc {
+      font-size: 0.95rem;
+      color: var(--blue);
+      opacity: 0.85;
+      flex: 1;
+    }
+    .card .actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--gray-100);
+      font-size: 0.875rem;
+    }
+    .card .actions .primary {
+      font-weight: 700;
+      color: var(--cyan);
+    }
+    .card .actions .primary::after {
+      content: ' →';
+      transition: transform 0.2s ease;
+      display: inline-block;
+    }
+    .card .actions .primary:hover::after { transform: translateX(2px); }
+    .card .actions .secondary { color: var(--gray-400); }
+    .card .actions .secondary:hover { color: var(--cyan); }
+
+    footer.site {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+      border-top: 1px solid var(--gray-100);
+      color: var(--gray-400);
+      font-size: 0.875rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<header class="site">
+  <a href="https://byte5.ai/" aria-label="byte5">
+    <img src="https://byte5.ai/byte5-logo.svg" alt="byte5">
+  </a>
+</header>
+
+<main>
+  <div class="hero">
+    <span class="eyebrow">Meetups &amp; Tech Talks</span>
+    <h1>byte5 Meetups<span class="accent">.</span></h1>
+    <p>Slide decks, demo code, and companion material from byte5 meetups and tech talks.</p>
+  </div>
+
+  <div class="grid">
+
+    <article class="card">
+      <div class="meta">
+        <span class="type">Hackathon</span>
+        <time datetime="2026-05-13">2026-05-13</time>
+      </div>
+      <h2>OpenClaw Hackathon</h2>
+      <div class="by">Marcel Wege · 34 slides</div>
+      <p class="desc">Hackathon-Format zum Bauen eigener OpenClaw-AgentSkills. Live-Demo eines Referenz-Skills, Level-Wahl (Entry / Intermediate / Expert), zweistündiger Build-Sprint, Show &amp; Tell.</p>
+      <div class="actions">
+        <a class="primary" href="./2026-05-13-openclaw-hackathon-1/">Open deck</a>
+        <a class="secondary" href="./2026-05-13-openclaw-hackathon-1/deck.pdf">PDF</a>
+        <a class="secondary" href="https://github.com/byte5ai/meetups/tree/main/2026-05-13-openclaw-hackathon-1">Source</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="meta">
+        <span class="type">Tech Talk</span>
+        <time datetime="2026-05-05">2026-05-05</time>
+      </div>
+      <h2>Claude &amp; Claude Code</h2>
+      <div class="by">Marcel Wege · 42 + 8 slides</div>
+      <p class="desc">Vom Chat zum Agenten-Stack — ein 60–75-Minuten-Streifzug durch das Claude-Ökosystem für Devs. Modellfamilie, Cowork, MCP-Stack, Skills/Hooks/Subagents und Spec-Driven Development. Mit Sub-Deck zu GitHub Spec-Kit.</p>
+      <div class="actions">
+        <a class="primary" href="./2026-05-05-claude-code/">Open deck</a>
+        <a class="secondary" href="./2026-05-05-claude-code/deck.pdf">PDF</a>
+        <a class="secondary" href="./2026-05-05-claude-code/spec-kit-demo.html">Spec-Kit Sub-Deck</a>
+        <a class="secondary" href="https://github.com/byte5ai/meetups/tree/main/2026-05-05-claude-code">Source</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="meta">
+        <span class="type">Tech Talk</span>
+        <time datetime="2026-04-15">2026-04-15</time>
+      </div>
+      <h2>Einführung in OpenClaw</h2>
+      <div class="by">Marcel Wege · 52 slides</div>
+      <p class="desc">Ein lokaler AI-Assistent — auf WhatsApp, Telegram, Slack, iMessage, Signal, Matrix. In 90 Minuten live demonstriert: Gateway, Skills als Markdown, LLM frei wählbar (Anthropic, OpenAI, Ollama).</p>
+      <div class="actions">
+        <a class="primary" href="./2026-04-15-openclaw-intro/">Open deck</a>
+        <a class="secondary" href="./2026-04-15-openclaw-intro/deck.pdf">PDF</a>
+        <a class="secondary" href="https://github.com/byte5ai/meetups/blob/main/2026-04-15-openclaw-intro/INSTALL.md">INSTALL.md</a>
+        <a class="secondary" href="https://github.com/byte5ai/meetups/tree/main/2026-04-15-openclaw-intro">Source</a>
+      </div>
+    </article>
+
+  </div>
+</main>
+
+<footer class="site">
+  <div>© byte5 GmbH</div>
+  <div>
+    <a href="https://github.com/byte5ai/meetups">Source on GitHub</a>
+    &nbsp;·&nbsp;
+    <a href="https://byte5.ai/">byte5.ai</a>
+  </div>
+</footer>
+
+</body>
+</html>

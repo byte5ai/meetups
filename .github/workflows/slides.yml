@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '*/slides/**'
+      - 'index.html'
       - '.github/workflows/slides.yml'
   workflow_dispatch:
 
@@ -29,6 +30,11 @@ jobs:
 
       - name: Install Marp engine deps
         run: npm install --no-save @marp-team/marp-core
+
+      - name: Copy landing index
+        run: |
+          mkdir -p dist
+          cp index.html dist/index.html
 
       - name: Build 2026-04-15-openclaw-intro
         run: |
