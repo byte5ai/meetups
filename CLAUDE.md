@@ -169,16 +169,6 @@ curl -sI https://byte5ai.github.io/meetups/YYYY-MM-DD-<slug>/deck.pdf | head -1
 curl -sL https://byte5ai.github.io/meetups/ | grep -c "YYYY-MM-DD-<slug>"
 ```
 
-### 8. (Falls auf byte5.ai zu listen) — Tutorial-Eintrag im Website-Repo
-
-byte5.ai zeigt Meetups unter `/tutorials/`. Wenn dieser Talk dort auftauchen soll, im **byte5ai/byte5ai** Repo:
-
-- `src/content/tutorials.ts`: neuen Eintrag mit `kind: "external-deck"`, `deckPath` + `pdfPath` auf die `byte5ai.github.io/meetups/…`-URLs, `repoUrl` auf `https://github.com/byte5ai/meetups/tree/main/<folder>`
-- Cover-Bild (16:9, WebP) unter `public/tutorials/covers/<slug>.webp` ablegen
-- i18n-Beschreibungen für alle aktiven Locales (de / en / es / it / fr)
-
-Siehe vorhandene Einträge in `tutorials.ts` als Vorlage.
-
 ## Lokale Entwicklung
 
 Pro Subordner mit eigener `package.json`:
@@ -193,30 +183,9 @@ npm run pdf      # Lokaler PDF-Build
 
 Marp-Live-Preview ist deutlich schneller als der CI-Roundtrip. Nutze sie für Iteration. **Push erst, wenn die Slides stimmen** — jeder Push triggert einen Pages-Deploy.
 
-## Git-History
-
-Die drei initialen Meetups wurden via `git subtree add --prefix=<folder> <url> main` (ohne `--squash`) aus den ursprünglichen Standalone-Repos (`byte5ai/claude-demo`, `byte5ai/openclaw-demo`, `byte5ai/openclaw-hackathon-1`) eingespielt. Die komplette ursprüngliche Historie ist im Repo erhalten — sichtbar via `git log --all`. `git log -- <folder>/` zeigt nur Commits seit der Migration, weil pre-merge Commits einen anderen Pfad-Präfix hatten.
-
-**Beim Import weiterer Alt-Repos** dieselbe Methode verwenden:
-
-```bash
-git subtree add --prefix=YYYY-MM-DD-<slug> https://github.com/byte5ai/<old-repo>.git main
-```
-
-Niemals `--squash` benutzen — wir wollen Historie behalten.
-
 ## Gotchas
-
-Aus der initialen Migration gelernt — bitte nicht wiederholen:
 
 - **`byte5-logo.svg` (Datei mit `fill="currentColor"`) NICHT cross-origin via `<img>` laden** — rendert unsichtbar, weil der CSS-Kontext nicht propagiert. Nutze `assets/byte5-logo-cyan.svg` (vorkoloriert, self-contained).
 - **PDFs unterscheiden sich Run-zu-Run um ±50 Bytes** (Marp embeddet einen Build-Timestamp). Nicht versuchen, byte-Parität zu erzwingen — der Inhalt ist identisch.
 - **Workflow path-filter pflegen.** Bei neuem Subordner-Muster (z. B. wenn jemand `foo-2026/` statt `2026-foo/` einbringt) trigger der workflow nicht mehr automatisch. Das Pattern `*/slides/**` matched alle Top-Level-Folder mit `slides/`, ist also relativ tolerant — aber prüfe.
 - **Pages-Source nicht auf Jekyll umstellen.** Wir nutzen `build_type: workflow`. Wer das ändert, killt den Custom-Build.
-- **Quell-Repos archivieren ≠ löschen.** Nach der Migration wurden `byte5ai/{claude-demo,openclaw-demo,openclaw-hackathon-1}` archiviert (read-only). Pages bleibt live — alte URLs `byte5ai.github.io/claude-demo/` etc. funktionieren weiter als Sicherheitsnetz. **Nicht löschen ohne Einwilligung** (externe Links auf Social Media / Slides würden brechen).
-
-## Was hier NICHT hineingehört
-
-- **Produkt-Code, Libraries, deploybare Apps** — die gehören in eigene Repos. Dieses Repo ist ausschließlich für Vortragsmaterial.
-- **Vertrauliche Daten** — alles hier wird auf GitHub Pages **public** gehostet. Keine API-Keys, keine Kundennamen ohne Einverständnis, keine Slides aus internen Strategie-Meetings.
-- **Generisches byte5-Branding/Design-System** — das lebt in `byte5ai/byte5ai`. Hier nur die für diese Landing-Seite minimal nötigen Assets.
