@@ -1156,12 +1156,12 @@ html, body {
 .compare-card {
   background: var(--b5-weiss);
   border-radius: var(--radius-md);
-  padding: 48px 44px;
+  padding: var(--cc-padding, 48px 44px);
   box-shadow: var(--shadow-sm);
   border-top: 5px solid var(--gray-400);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--cc-gap, 18px);
 }
 .compare-card.compare-card--accent { border-top-color: var(--b5-blau); }
 .compare-card.compare-card--warn   { border-top-color: var(--b5-magenta); }
@@ -1224,7 +1224,7 @@ html, body {
   color: var(--b5-blau);
   font-weight: 700;
 }
-.compare-card.compare-card--warn ul li::before { content: "✕"; color: var(--b5-magenta); }
+.compare-card.compare-card--warn ul li::before { color: var(--b5-magenta); }
 
 /* Drei-Reasons-Treppe (Slide 21 "Warum natürlich reden") */
 .reason-stairs {
