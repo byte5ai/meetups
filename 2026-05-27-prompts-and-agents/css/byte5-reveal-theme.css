@@ -1372,13 +1372,13 @@ html, body {
   grid-template-columns: 1fr 1fr;
   align-items: start;
   column-gap: 36px;
-  margin-top: 12px;
+  margin-top: 120px;
   max-width: 1680px;
 }
 .code-compare .code-block {
   background: var(--b5-blau-dunkel);
   border-radius: var(--radius-md);
-  padding: 32px 36px 220px;
+  padding: 32px 36px;
   font-family: var(--font-mono);
   font-size: 24px;
   line-height: 1.5;
