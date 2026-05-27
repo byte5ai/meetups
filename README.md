@@ -6,6 +6,14 @@ Alle Decks live unter <https://byte5ai.github.io/meetups/>.
 
 ## Talks (neueste zuerst)
 
+### 2026-05-27 — Prompts und Agents
+**Tech Talk · Christian Wendler · 37 Slides**
+
+Ein Blick hinter die Kulissen von Claude: was Prompts wirklich sind, warum die Session eine Illusion ist, mit welcher Persona Du eigentlich redest und wie Halluzination, Sycophancy und Drift mechanisch entstehen. Mit zwei interaktiven Visualisierungen (Stateless-Animation, Context-Window-Visualizer) und progressiven Reveals.
+
+- Slides: <https://byte5ai.github.io/meetups/2026-05-27-prompts-and-agents/>
+- Source: <https://github.com/byte5ai/meetups/tree/main/2026-05-27-prompts-and-agents>
+
 ### 2026-05-13 — OpenClaw Hackathon
 **Hackathon · Marcel Wege · 34 Slides**
 

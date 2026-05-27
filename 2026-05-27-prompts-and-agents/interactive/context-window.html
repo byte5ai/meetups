@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Context-Window-Visualizer</title>
+  <link rel="stylesheet" href="../css/byte5-tokens.css" />
+  <style>
+    /* Eigener Stage-Style, weil dieses File via iframe geladen wird
+       und nicht zur reveal.js-Bühne gehört. 720px ist die iframe-Höhe. */
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: var(--font-text);
+      background: var(--b5-weiss);
+      color: var(--b5-blau-dunkel);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      padding: 28px;
+      box-sizing: border-box;
+    }
+
+    /* Linke Spalte: Eingabe + Token-Counter */
+    .left {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+    .left h2 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--b5-blau-dunkel);
+      margin: 0 0 4px;
+    }
+    .left .hint {
+      font-size: 14px;
+      color: var(--gray-500);
+      margin: 0 0 8px;
+    }
+    .left textarea {
+      width: 100%;
+      flex: 1;
+      min-height: 120px;
+      font-family: var(--font-mono);
+      font-size: 16px;
+      line-height: 1.5;
+      padding: 14px 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      resize: none;
+      color: var(--b5-blau-dunkel);
+      background: var(--gray-50);
+      box-sizing: border-box;
+    }
+    .left textarea:focus {
+      outline: none;
+      border-color: var(--b5-blau);
+      background: var(--b5-weiss);
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+    }
+    button.btn {
+      font-family: var(--font-text);
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 22px;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--b5-blau);
+      background: var(--b5-blau);
+      color: var(--b5-weiss);
+      cursor: pointer;
+      transition: background var(--dur-fast) var(--ease-out);
+    }
+    button.btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    button.btn.ghost {
+      background: transparent;
+      color: var(--b5-blau);
+    }
+    button.btn.ghost:hover { background: var(--gray-50); }
+
+    /* Token-Counter */
+    .counter {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 18px 20px;
+      border-radius: var(--radius-md);
+      background: var(--gray-50);
+      border: 2px solid var(--gray-200);
+    }
+    .counter .label {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--gray-500);
+    }
+    .counter .nums {
+      font-family: var(--font-display);
+      font-size: 28px;
+      line-height: 1;
+      color: var(--b5-blau-dunkel);
+    }
+    .counter .bar {
+      width: 100%;
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .counter .bar .fill {
+      height: 100%;
+      width: 0%;
+      background: var(--b5-blau);
+      border-radius: var(--radius-pill);
+      transition: width var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+    }
+    /* Pending-State: Wert wird erst nach erstem Submit enthüllt (der „Aha"-
+       Moment hängt davon ab, dass die ~28K nicht schon beim Laden sichtbar
+       sind). Vorher: italic Hinweistext, /-Maximum + Bar versteckt. */
+    .counter.pending .nums {
+      color: var(--gray-400);
+      font-style: italic;
+      font-size: 18px;
+      font-family: var(--font-text);
+    }
+    .counter.pending .max { display: none; }
+    .counter.pending .bar { opacity: 0.4; }
+
+    /* Rechte Spalte: Container-Stack */
+    .right {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .right h2 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--b5-blau-dunkel);
+      margin: 0 4px 4px;
+    }
+    .right .what {
+      font-size: 13px;
+      color: var(--gray-500);
+      margin: 0 4px 12px;
+    }
+    .block {
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--b5-blau-dunkel);
+      box-shadow: var(--shadow-xs);
+      animation: pop-in var(--dur-base) var(--ease-out);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .block .label { font-weight: 700; }
+    .block .size {
+      font-size: 12px;
+      color: var(--gray-500);
+      font-weight: 400;
+    }
+    .block.system {
+      background: var(--b5-blau);
+      color: var(--b5-weiss);
+      padding: 22px 18px;
+      font-size: 16px;
+    }
+    .block.system .size { color: rgba(255,255,255,0.8); }
+    .block.memory {
+      background: var(--gray-100);
+      border-left: 4px solid var(--b5-blau);
+    }
+    .block.turn {
+      background: var(--b5-weiss);
+      border: 1px solid var(--gray-200);
+    }
+    .block.turn.user { border-left: 4px solid var(--b5-blau); }
+    .block.turn.assistant { border-left: 4px solid var(--gray-400); background: var(--gray-50); }
+    .block.new-user {
+      background: var(--b5-magenta);
+      color: var(--b5-weiss);
+      animation: pop-in-pulse var(--dur-base) var(--ease-out);
+    }
+    .block.new-user .size { color: rgba(255,255,255,0.85); }
+
+    @keyframes pop-in {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop-in-pulse {
+      0%   { opacity: 0; transform: translateY(-10px) scale(0.95); }
+      60%  { opacity: 1; transform: translateY(0) scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    /* Aha-Hinweis nach 1. Submit */
+    .aha {
+      background: var(--b5-magenta);
+      color: var(--b5-weiss);
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      line-height: 1.4;
+      margin-top: 4px;
+      animation: pop-in var(--dur-base) var(--ease-out);
+    }
+    .aha strong { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="left">
+    <h2>1.&nbsp;&nbsp;Tipp eine Nachricht ein</h2>
+    <p class="hint">Was Du als „kleine Nachricht" siehst, kommt vorne mit ~96&nbsp;KB System-Prompt + Memory + Verlauf an. Submit per <kbd>Enter</kbd> oder Button. Keine echten API-Calls. Token-Schätzung lokal.</p>
+    <textarea id="msg" placeholder="z. B. „Hallo Claude, kannst Du mir helfen?""></textarea>
+    <div class="controls">
+      <button class="btn" id="submit">Submit</button>
+      <button class="btn ghost" id="reset">Reset</button>
+    </div>
+    <div class="counter pending" id="counter">
+      <span class="label">Tokens, die wirklich rausgehen</span>
+      <span class="nums"><span id="tok">noch nicht gezählt – drück Submit</span><span class="max"> / 1&#8239;000&#8239;000</span></span>
+      <div class="bar"><div class="fill" id="bar"></div></div>
+    </div>
+    <div id="aha-slot"></div>
+  </div>
+
+  <div class="right" id="stack">
+    <h2>2.&nbsp;&nbsp;Was wirklich rausgeht</h2>
+    <p class="what">Stack wächst von oben (neueste Nachricht) nach unten. System-Prompt liegt ganz unten und kommt jedes Mal mit.</p>
+    <!-- Stack wird oberhalb dynamisch befüllt; System-Prompt + Memory unten sind statisch -->
+    <div class="block memory">
+      <span class="label">Memory&nbsp;/&nbsp;Files</span><span class="size">variabel · 0,5 – 50 K Tokens</span>
+    </div>
+    <div class="block system">
+      <span class="label">System-Prompt</span><span class="size">~96 KB · ~24 000 Tokens · fix</span>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    const SYSTEM_TOKENS = 24000;
+    const MEMORY_TOKENS = 800;
+    const MAX_TOKENS = 1000000;
+
+    const stack = document.getElementById('stack');
+    const msgInput = document.getElementById('msg');
+    const submitBtn = document.getElementById('submit');
+    const resetBtn = document.getElementById('reset');
+    const tokSpan = document.getElementById('tok');
+    const barFill = document.getElementById('bar');
+    const counterEl = document.getElementById('counter');
+    const ahaSlot = document.getElementById('aha-slot');
+
+    let turnCount = 0;
+    let totalUserAssistantTokens = 0;
+    let hasSubmitted = false;
+    let ahaShown = false;
+
+    function estimateTokens(text) {
+      // Heuristik: ~4 Zeichen ≈ 1 Token (englischer Schnitt). Lokal, keine API.
+      return Math.max(1, Math.round(text.length / 4));
+    }
+
+    function formatNum(n) {
+      return n.toLocaleString('de-DE').replace(/\./g, ' ');
+    }
+
+    function updateCounter() {
+      if (!hasSubmitted) {
+        counterEl.classList.add('pending');
+        tokSpan.textContent = 'noch nicht gezählt – drück Submit';
+        barFill.style.width = '0%';
+        return;
+      }
+      counterEl.classList.remove('pending');
+      const total = SYSTEM_TOKENS + MEMORY_TOKENS + totalUserAssistantTokens;
+      tokSpan.textContent = formatNum(total);
+      const pct = Math.min(100, (total / MAX_TOKENS) * 100);
+      barFill.style.width = pct + '%';
+      let color = 'var(--b5-blau)';
+      if (pct > 60) color = '#E0A82E';
+      if (pct > 85) color = '#D9354C';
+      barFill.style.background = color;
+    }
+
+    function fakeAssistantReply(userTokens) {
+      // Stub-Reply mit ähnlicher Länge wie User-Eingabe
+      return Math.max(20, Math.round(userTokens * 1.4));
+    }
+
+    function addBlock(html, classes) {
+      const div = document.createElement('div');
+      div.className = 'block ' + classes;
+      div.innerHTML = html;
+      // Neueste oben einfügen, vor h2 + .what, aber AB den existierenden turn-Blöcken
+      const insertAfter = stack.querySelector('.what');
+      insertAfter.insertAdjacentElement('afterend', div);
+      return div;
+    }
+
+    function showAha() {
+      if (ahaShown) return;
+      ahaShown = true;
+      ahaSlot.innerHTML = '<div class="aha">' +
+        '<strong>Aha:</strong> Deine Nachricht ist nur ein kleiner Teil dessen, was rausgeht. '
+        + 'Den Großteil machen System-Prompt und Memory aus, die <em>jedes Mal</em> mitgeschickt werden.</div>';
+    }
+
+    function submitMsg() {
+      const text = msgInput.value.trim();
+      if (!text) return;
+      hasSubmitted = true;
+      turnCount++;
+      const userTok = estimateTokens(text);
+      totalUserAssistantTokens += userTok;
+
+      // User-Nachricht (neueste) oben einfügen
+      addBlock(
+        '<span class="label">Turn ' + turnCount + ', User</span>' +
+        '<span class="size">' + text.length + ' Zeichen · ~' + formatNum(userTok) + ' Tokens</span>',
+        'turn user new-user'
+      );
+      // Nach kurzer "Antwort"-Verzögerung Assistant-Block hinzufügen
+      setTimeout(() => {
+        const assistTok = fakeAssistantReply(userTok);
+        totalUserAssistantTokens += assistTok;
+        addBlock(
+          '<span class="label">Turn ' + turnCount + ', Assistant</span>' +
+          '<span class="size">~' + formatNum(assistTok) + ' Tokens</span>',
+          'turn assistant'
+        );
+        // 'new-user'-Klasse abnehmen (für ruhigere Optik)
+        document.querySelectorAll('.block.new-user').forEach(b => b.classList.remove('new-user'));
+        updateCounter();
+        if (turnCount === 1) showAha();
+      }, 600);
+
+      msgInput.value = '';
+      updateCounter();
+    }
+
+    function reset() {
+      turnCount = 0;
+      totalUserAssistantTokens = 0;
+      hasSubmitted = false;
+      ahaShown = false;
+      ahaSlot.innerHTML = '';
+      // Alle dynamischen Blöcke raus (alles außer Memory + System)
+      [...stack.querySelectorAll('.block')].forEach(b => {
+        if (!b.classList.contains('memory') && !b.classList.contains('system')) b.remove();
+      });
+      updateCounter();
+      msgInput.focus();
+    }
+
+    submitBtn.addEventListener('click', submitMsg);
+    resetBtn.addEventListener('click', reset);
+    msgInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitMsg();
+      }
+    });
+
+    updateCounter();
+  })();
+  </script>
+</body>
+</html>

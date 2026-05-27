@@ -93,6 +93,23 @@ jobs:
             --output dist/2026-05-13-openclaw-hackathon-1/deck.pdf
           cp -R 2026-05-13-openclaw-hackathon-1/slides/assets dist/2026-05-13-openclaw-hackathon-1/assets
 
+      - name: Build 2026-05-27-prompts-and-agents (reveal.js, statisch)
+        # Anders als die Marp-Decks: dieses Deck ist ein reveal.js-
+        # Projekt mit byte5-Designsystem. Es gibt nichts zu bauen —
+        # nur die statischen Dateien plus reveal.js aus node_modules
+        # ins dist/-Verzeichnis kopieren. PDF-Export aktuell nicht
+        # automatisiert (reveal.js print-pdf-Modus erfordert Headless
+        # Chrome — kann später nachgezogen werden).
+        working-directory: 2026-05-27-prompts-and-agents
+        run: |
+          npm ci --omit=dev
+          mkdir -p ../dist/2026-05-27-prompts-and-agents
+          cp index.html ../dist/2026-05-27-prompts-and-agents/
+          cp -R assets css fonts interactive ../dist/2026-05-27-prompts-and-agents/
+          mkdir -p ../dist/2026-05-27-prompts-and-agents/node_modules/reveal.js
+          cp -R node_modules/reveal.js/dist node_modules/reveal.js/plugin \
+                ../dist/2026-05-27-prompts-and-agents/node_modules/reveal.js/
+
       - uses: actions/upload-pages-artifact@v4
         with:
           path: dist

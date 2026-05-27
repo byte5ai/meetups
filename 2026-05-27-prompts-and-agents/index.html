@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prompts und Agents · byte5 Tech-Talk · 2026-05-27</title>
+
+  <link rel="stylesheet" href="node_modules/reveal.js/dist/reset.css" />
+  <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css" />
+  <link rel="stylesheet" href="css/byte5-tokens.css" />
+  <link rel="stylesheet" href="css/byte5-reveal-theme.css" />
+</head>
+<body>
+
+<div class="reveal">
+  <div class="slides">
+
+    <!-- ============================================================
+         SLIDE 1 — TITEL  (data-label "01 Titel")
+         ============================================================ -->
+    <section data-label="01 Titel" class="slide-cover">
+      <div class="cover-tint" style="background: var(--b5-blau-dunkel);"></div>
+      <div class="cover-circle"></div>
+      <img class="cover-logo" src="assets/byte5-logo-white.png" alt="byte5" />
+      <div class="cover-stack">
+        <h1 class="cover-headline">Prompts und Agents</h1>
+        <p class="cover-lead" style="font-size: var(--type-subtitle); font-weight: 600;">
+          <span class="colon">:</span>Ein Blick hinter die Kulissen von Claude
+        </p>
+        <p class="cover-lead" style="font-size: var(--type-small); font-weight: 400; opacity: 0.8; margin-top: 24px;">
+          Christian Wendler · byte5 · Claude-Meetup · 27. Mai 2026
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 2 (Brief #3) — WORUM ES HEUTE GEHT — Roadmap
+         ============================================================ -->
+    <section data-label="03 Worum es heute geht">
+      <div class="slide-header">
+        <p class="eyebrow">Agenda</p>
+        <h1 class="slide-title">Worum es heute geht</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Ein tieferes Verständnis, wie Prompts und Agents wirklich funktionieren. Damit Du effektiver mit Claude arbeitest.
+        </p>
+      </div>
+      <ol class="roadmap">
+        <li><span class="num">01</span><span class="item-title">Zwei Lager und ein Echo aus 1966</span></li>
+        <li><span class="num">02</span><span class="item-title">Was im Hintergrund passiert</span></li>
+        <li><span class="num">03</span><span class="item-title">Was ein Prompt wirklich ist</span></li>
+        <li><span class="num">04</span><span class="item-title">Die Session ist eine Illusion</span></li>
+        <li><span class="num">05</span><span class="item-title">Du redest schon mit einem Agenten</span></li>
+        <li><span class="num">06</span><span class="item-title">Was Agents wirklich sind</span></li>
+        <li><span class="num">07</span><span class="item-title">Warum LLMs Fehler machen</span></li>
+        <li><span class="num">08</span><span class="item-title">Was Du tun kannst</span></li>
+        <li><span class="num">09</span><span class="item-title">Drei Sätze zum Mitnehmen</span></li>
+      </ol>
+      <span class="slide-num">02 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 3 (Brief #4) — BLOCK 1 DIVIDER
+         ============================================================ -->
+    <section data-label="04 Block 1 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel eins von neun</p>
+      <div class="block-row">
+        <div class="block-num">01</div>
+        <div class="block-body">
+          <h2 class="block-title">Zwei Lager und ein Echo aus 1966</h2>
+          <p class="block-lead"><span class="colon">:</span>Skeptiker und Euphoriker irren sich. Aus demselben Denkfehler heraus.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 4 (Brief #5) — ZWEI LAGER IM RAUM
+         ============================================================ -->
+    <section data-label="05 Zwei Lager">
+      <div class="slide-header">
+        <p class="eyebrow">Skeptiker und Euphoriker</p>
+        <h1 class="slide-title">Was beide übersehen</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Beide haben einen Punkt. Und beide einen blinden Fleck im selben Bereich.
+        </p>
+      </div>
+      <div class="compare-2col">
+        <article class="compare-card compare-card--muted">
+          <p class="eyebrow" style="color: var(--gray-600);">Lager 1</p>
+          <h3>Skeptiker</h3>
+          <p>Schlechter Output → „LLMs sind Unsinn."</p>
+          <p class="point"><strong>Punkt:</strong> Fehler und Halluzinationen sind real. Der Frust ist berechtigt.</p>
+          <p class="verdict"><strong>Übersieht:</strong> Das Werkzeug wird mit Verständnis sehr leistungsfähig.</p>
+        </article>
+        <article class="compare-card compare-card--accent">
+          <p class="eyebrow">Lager 2</p>
+          <h3>Euphoriker</h3>
+          <p>Geniale Antworten → „Da steckt Bewusstsein drin."</p>
+          <p class="point"><strong>Punkt:</strong> Die Ergebnisse sind tatsächlich beeindruckend. Die Faszination ist berechtigt.</p>
+          <p class="verdict"><strong>Übersieht:</strong> Die Funktionsweise und der Eliza-Effekt werden nicht beachtet.</p>
+        </article>
+      </div>
+      <span class="slide-num">04 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 5 (Brief #6) — ELIZA, MIT, 1966 + Blumen-Pointe
+         ============================================================ -->
+    <section data-label="06 Eliza" class="slide-eliza">
+      <div class="slide-header">
+        <p class="eyebrow">MIT · 1966</p>
+        <h1 class="slide-title">Eliza</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>200 Zeilen Code reichten, um Menschen glauben zu lassen, sie würden gehört.
+        </p>
+      </div>
+      <div class="eliza-content" style="display: grid; grid-template-columns: 1.1fr 1fr; column-gap: 80px; margin-top: var(--gap-section); max-width: 1680px;">
+        <ul class="b5-bullets" style="gap: 24px;">
+          <li>Joseph Weizenbaums <code>Eliza</code> spiegelte den Nutzer wie eine Gesprächstherapeutin zurück. Reines Pattern-Matching, kein semantisches Verständnis.</li>
+          <li>Seine Sekretärin bat ihn, das Zimmer zu verlassen. Sie wolle <em>„privat mit Eliza reden"</em>.</li>
+          <li>Heute andere Werkzeuge, derselbe Effekt im Kopf des Nutzers.</li>
+        </ul>
+        <div style="background: var(--b5-blau-dunkel); border-radius: var(--radius-md); padding: 36px 40px; font-family: var(--font-mono); font-size: 22px; line-height: 1.7; color: rgba(255,255,255,0.9); box-shadow: var(--shadow-md); align-self: start;">
+          <div style="color: var(--b5-blau); font-weight: 600;">ELIZA:</div>
+          <div>How do you do. Please tell me your problem.</div>
+          <div style="color: rgba(255,255,255,0.55); margin-top: 14px;">&gt; Men are all alike.</div>
+          <div style="color: var(--b5-blau); font-weight: 600; margin-top: 14px;">ELIZA:</div>
+          <div>In what way?</div>
+          <div style="color: rgba(255,255,255,0.55); margin-top: 14px;">&gt; They're always bugging us about something.</div>
+          <div style="color: var(--b5-blau); font-weight: 600; margin-top: 14px;">ELIZA:</div>
+          <div>Can you think of a specific example?</div>
+        </div>
+      </div>
+      <div class="pointe-wrap fragment">
+        <p class="pointe-eyebrow">Eine Analogie</p>
+        <p class="pointe-plain">Menschen reden auch mit Blumen. Das beweist gar nichts darüber, was die Blume ist.</p>
+      </div>
+      <p class="slide-source">
+        Weizenbaum, J. (1966): „ELIZA — A Computer Program For the Study of Natural Language Communication Between Man And Machine"
+      </p>
+      <span class="slide-num">05 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 6 (Brief #7) — BLOCK 2 DIVIDER
+         ============================================================ -->
+    <section data-label="07 Block 2 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel zwei von neun</p>
+      <div class="block-row">
+        <div class="block-num">02</div>
+        <div class="block-body">
+          <h2 class="block-title">Was im Hintergrund passiert</h2>
+          <p class="block-lead"><span class="colon">:</span>Was ein LLM unter der Haube wirklich tut. So kurz wie möglich.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 7 (Brief #8) — IN DREI SÄTZEN
+         Vorgänger-Talk: https://byte5.ai/talks
+         ============================================================ -->
+    <section data-label="08 In drei Sätzen">
+      <div class="slide-header">
+        <p class="eyebrow">Schnellüberblick in drei Sätzen</p>
+        <h1 class="slide-title">Was ein LLM unter der Haube tut</h1>
+      </div>
+      <div class="three-sentences">
+        <article class="ts-card">
+          <div class="ts-num">01</div>
+          <h3 class="ts-head">Tokens</h3>
+          <p class="ts-body">Dein Prompt wird in kleine Bausteine zerlegt und in Zahlen übersetzt.</p>
+        </article>
+        <article class="ts-card">
+          <div class="ts-num">02</div>
+          <h3 class="ts-head">Wahrscheinlichkeiten</h3>
+          <p class="ts-body">Das Modell rechnet aus, welcher Token als nächstes am wahrscheinlichsten ist. Mit etwas Zufall, gesteuert über die <code>Temperatur</code>.</p>
+        </article>
+        <article class="ts-card">
+          <div class="ts-num">03</div>
+          <h3 class="ts-head">Wiederholung</h3>
+          <p class="ts-body">Token raus, ans Ende des Prompts anfügen, von vorne. So entsteht Wort für Wort der ganze Text.</p>
+        </article>
+      </div>
+      <a class="link-card link-card--inline" href="https://byte5.ai/talks" style="text-decoration: none;">
+        <span>
+          <span class="label">Tieferer Einstieg im Vorgänger-Talk</span><br/>
+          <span class="url">byte5.ai/talks</span>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+      <span class="slide-num">07 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 8 (Brief #9) — BLOCK 3 DIVIDER
+         ============================================================ -->
+    <section data-label="09 Block 3 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel drei von neun</p>
+      <div class="block-row">
+        <div class="block-num">03</div>
+        <div class="block-body">
+          <h2 class="block-title">Was ein Prompt wirklich ist</h2>
+          <p class="block-lead"><span class="colon">:</span>Was Du eintippst, ist kein Befehl. Es ist die Information, aus der das Modell seine Antwort ableitet.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 9 (Brief #10) — PROMPT IST KONTEXT
+         ============================================================ -->
+    <section data-label="10 Prompt ist Kontext">
+      <div class="slide-header">
+        <p class="eyebrow">Was wirkt, was nur Folklore ist</p>
+        <h1 class="slide-title">Klarheit schlägt Beschwörung</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Das Modell rechnet aus, was als Nächstes am wahrscheinlichsten folgt. Was Du beifügst, lenkt diese Vorhersage. Befehlen lässt sich da nichts.
+        </p>
+      </div>
+      <div class="compare-2col">
+        <article class="compare-card compare-card--accent">
+          <p class="eyebrow">Was wirkt</p>
+          <h3>Klarer Kontext</h3>
+          <ul>
+            <li>Präzise Beschreibung der Aufgabe</li>
+            <li>Struktur mit Sections, Beispielen, Daten</li>
+            <li>Gute Beispiele schlagen lange Erklärungen</li>
+          </ul>
+          <p class="verdict" style="margin-top: 8px;">Je präziser der Kontext, desto präziser das Resultat.</p>
+        </article>
+        <article class="compare-card compare-card--warn">
+          <p class="eyebrow">Was Folklore ist</p>
+          <h3>Magische Wörter</h3>
+          <ul>
+            <li>„Atme tief durch und denke nach …"</li>
+            <li>„Du bist Experte für …"</li>
+            <li>Trinkgeld-Versprechen, „sehr wichtig!", Drohungen</li>
+          </ul>
+          <p class="verdict" style="margin-top: 8px;">Wirkt nicht systematisch besser als klarer Kontext.</p>
+        </article>
+      </div>
+      <span class="slide-num">09 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 10 (Brief #12) — STRUKTUR, DIE WIRKT
+         ============================================================ -->
+    <section data-label="12 Struktur die wirkt">
+      <div class="slide-header">
+        <p class="eyebrow">XML-Tags, Beispiele</p>
+        <h1 class="slide-title">Was Claude wirklich gut versteht</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Strukturierte Prompts schlagen unstrukturierte. Claude versteht XML-Tags besonders gut. Anthropic hat ihn explizit darauf trainiert.
+        </p>
+      </div>
+      <div class="code-compare">
+        <div class="code-block code-block--bad">
+          <span class="code-label">⨯ Folklore</span>Du bist ein Experte für Marketing.
+Atme tief durch und denke
+gründlich nach. Schreib mir
+einen Werbetext für unser
+neues Produkt. Sei kreativ!</div>
+        <div class="code-block code-block--good">
+          <span class="code-label">✓ Kontext + Struktur</span><span class="tag">&lt;context&gt;</span>
+  Zielgruppe: B2B-IT-Entscheider
+  Produkt: SaaS-Monitoring-Tool
+<span class="tag">&lt;/context&gt;</span>
+<span class="tag">&lt;examples&gt;</span>
+  ... 2 frühere Texte ...
+<span class="tag">&lt;/examples&gt;</span>
+<span class="tag">&lt;task&gt;</span>
+  Headline + 3 Bullets, 80 Wörter
+<span class="tag">&lt;/task&gt;</span></div>
+      </div>
+      <p class="slide-source">Anthropic Prompt Engineering Documentation</p>
+      <span class="slide-num">10 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 11 (Brief #11) — CONTEXT ENGINEERING
+         ============================================================ -->
+    <section data-label="11 Context Engineering">
+      <div class="slide-header">
+        <p class="eyebrow">Der zentrale Begriff: Context</p>
+        <h1 class="slide-title">Was das Modell wirklich sieht</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Context ist alles, was das Modell pro Antwort liest. Ein Token-Fenster mit harter Grenze.
+        </p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; column-gap: 80px; margin-top: var(--gap-section); max-width: 1680px; align-items: start;">
+        <ul class="b5-bullets bullets-headed" style="gap: 22px; font-size: 26px;">
+          <li>
+            <span class="bullet-head">Alles muss ins Fenster passen.</span>
+            <span class="bullet-body">System-Prompt, Memory, Verlauf, Tools und Deine Eingabe teilen sich den Platz.</span>
+          </li>
+          <li>
+            <span class="bullet-head">Context Engineering ist das Handwerk dahinter.</span>
+            <span class="bullet-body">Anthropic-Begriff seit September 2025: aus dem Fenster die wertvollsten Tokens herauspicken.</span>
+          </li>
+          <li>
+            <span class="bullet-head">Maxime: kleinster Satz Tokens, der das Ergebnis maximiert.</span>
+            <span class="bullet-body">Lieber wenig Hochrelevantes als viel Mittelmäßiges.</span>
+          </li>
+        </ul>
+        <div>
+          <div class="ctx-window">
+            <p class="ctx-window-head">
+              <span>Context-Window</span>
+              <span class="max">1 000 000 Tokens · Claude Opus 4.7</span>
+            </p>
+            <div class="ctx-bar">
+              <div class="ctx-seg sys"><span class="name">System-Prompt</span><span class="sz">~24 000 Tokens · fix</span></div>
+              <div class="ctx-seg mem"><span class="name">Memory / Files</span><span class="sz">variabel · 0,5 – 50 K</span></div>
+              <div class="ctx-seg hist"><span class="name">Verlauf (Turns)</span><span class="sz">wächst pro Turn</span></div>
+              <div class="ctx-seg free"><span>frei für Deine Eingabe + Antwort</span></div>
+            </div>
+            <p class="ctx-window-foot">Wenn voll: Modell bricht ab oder vergisst den Anfang.</p>
+          </div>
+        </div>
+      </div>
+      <p class="slide-source">Anthropic, „Effective Context Engineering for AI Agents" (September 2025) · Systemprompt-Größe per Pliny-Leak, Mai 2025</p>
+      <span class="slide-num">11 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 12 (Brief #13) — BLOCK 4 DIVIDER
+         ============================================================ -->
+    <section data-label="13 Block 4 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel vier von neun</p>
+      <div class="block-row">
+        <div class="block-num">04</div>
+        <div class="block-body">
+          <h2 class="block-title">Die Session ist eine Illusion</h2>
+          <p class="block-lead"><span class="colon">:</span>Was wie ein Gespräch aussieht, ist eine Folge unabhängiger Modell-Aufrufe. Jeder bekommt den vollen Verlauf neu mit.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 13 (Brief #14) — SESSION-ILLUSION
+         ============================================================ -->
+    <section data-label="14 Session-Illusion">
+      <div class="slide-header">
+        <p class="eyebrow">Wo die Session wirklich liegt</p>
+        <h1 class="slide-title">Die Session ist eine Illusion</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Das LLM selbst ist <strong>immer</strong> stateless. Die Session lebt entweder beim Client oder in einer Persistenzschicht vor dem Modell. Nie im Modell.
+        </p>
+      </div>
+      <div style="margin-top: 36px; max-width: 1680px;">
+        <ul class="b5-bullets bullets-headed" style="gap: 22px; font-size: 26px;">
+          <li>
+            <span class="bullet-head">Das Modell hat nie eine Session gesehen.</span>
+            <span class="bullet-body">Architekturfakt, kein Provider-Spezifikum.</span>
+          </li>
+          <li>
+            <span class="bullet-head">Variante 1: Der Client führt die History.</span>
+            <span class="bullet-body">Der Client hängt jeden neuen Turn an und schickt den vollen Verlauf bei jedem Aufruf wieder mit.</span>
+          </li>
+          <li>
+            <span class="bullet-head">Variante 2: Persistenzschicht im Produkt.</span>
+            <span class="bullet-body">Eine Schicht um das Modell herum hält den Verlauf. Wo genau (Server, App, Wrapper) ist für die Aussage egal: nicht im Modell.</span>
+          </li>
+          <li>
+            <span class="bullet-head">Trotzdem geht jedes Mal alles ans Modell.</span>
+            <span class="bullet-body">Vor jedem Aufruf wird der volle Kontext zusammengebaut. Statefulness spart Bandbreite, keinen Compute.</span>
+          </li>
+        </ul>
+      </div>
+      <span class="slide-num">13 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 14 (Brief #15) — INTERACTIVE C: Stateless-Animation
+         ============================================================ -->
+    <section data-label="15 Interactive C — Stateless Animation">
+      <div class="slide-header" style="margin-top: 0;">
+        <p class="eyebrow">Interaktive Visualisierung · Sicht auf das Modell</p>
+        <h1 class="slide-title" style="font-size: 48px;">Was wirklich passiert, Schritt für Schritt</h1>
+      </div>
+      <div class="iframe-slot">
+        <iframe src="interactive/stateless.html" title="Stateless-Animation" loading="lazy"></iframe>
+      </div>
+      <span class="slide-num">14 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 15 (Brief #16) — CONTEXT ROT
+         ============================================================ -->
+    <section data-label="16 Context Rot">
+      <div class="slide-header">
+        <p class="eyebrow">Chroma-Studie 2025</p>
+        <h1 class="slide-title">Vor dem Limit zerfällt der Fokus</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Schon weit unter dem Token-Limit verliert das Modell an Präzision. Nicht der Platz ist das Problem, sondern der Fokus.
+        </p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.1fr 1fr; column-gap: 60px; margin-top: 36px; max-width: 1680px; align-items: start;">
+        <ul class="b5-bullets bullets-headed" style="gap: 16px; font-size: 22px;">
+          <li>
+            <span class="bullet-head">Alle Modelle verlieren an Genauigkeit, wenn der Kontext lang wird.</span>
+            <span class="bullet-body">Chroma-Studie 2025: 18 Spitzen-Modelle getestet, alle betroffen.</span>
+          </li>
+          <li>
+            <span class="bullet-head">Ab ~60–70 % Auslastung sinkt die Präzision spürbar.</span>
+            <span class="bullet-body">Technisch passt der Rest rein. Für wichtige Aufgaben besser darunter bleiben.</span>
+          </li>
+          <li>
+            <span class="bullet-head">Claude Opus 4.6: 92 % bei 256 K, 78 % bei 1 M Tokens.</span>
+            <span class="bullet-body">Beim Auffinden versteckter Infos. Je länger der Kontext, desto schwächer die Trefferquote.</span>
+          </li>
+          <li>
+            <span class="bullet-head">„Lost in the middle": Anfang und Ende prägen, die Mitte verblasst.</span>
+          </li>
+        </ul>
+        <svg viewBox="0 0 600 380" style="width: 100%; max-height: 360px; height: auto; font-family: var(--font-text);" preserveAspectRatio="xMidYMid meet" aria-label="Retrieval-Performance über Token-Anzahl">
+          <g stroke="var(--gray-200)" stroke-width="1">
+            <line x1="60" y1="40" x2="580" y2="40" />
+            <line x1="60" y1="110" x2="580" y2="110" />
+            <line x1="60" y1="180" x2="580" y2="180" />
+            <line x1="60" y1="250" x2="580" y2="250" />
+          </g>
+          <line x1="60" y1="320" x2="580" y2="320" stroke="var(--gray-300)" stroke-width="2" />
+          <g font-size="16" fill="var(--gray-500)" text-anchor="end">
+            <text x="50" y="46">100%</text>
+            <text x="50" y="116">90%</text>
+            <text x="50" y="186">80%</text>
+            <text x="50" y="256">70%</text>
+            <text x="50" y="326">60%</text>
+          </g>
+          <g font-size="16" fill="var(--gray-600)" text-anchor="middle">
+            <text x="100" y="350">8K</text>
+            <text x="220" y="350">64K</text>
+            <text x="340" y="350">256K</text>
+            <text x="460" y="350">512K</text>
+            <text x="560" y="350">1M</text>
+          </g>
+          <polyline fill="none" stroke="var(--b5-blau)" stroke-width="4"
+                    points="100,50  220,80  340,110  460,200  560,265" />
+          <g fill="var(--b5-blau)">
+            <circle cx="100" cy="50" r="6"/>
+            <circle cx="220" cy="80" r="6"/>
+            <circle cx="340" cy="110" r="6"/>
+            <circle cx="460" cy="200" r="6"/>
+            <circle cx="560" cy="265" r="6" fill="var(--b5-magenta)" stroke="var(--b5-magenta)"/>
+          </g>
+          <text x="560" y="245" font-size="18" font-weight="700" fill="var(--b5-magenta)" text-anchor="end">78 %</text>
+          <text x="100" y="32" font-size="18" font-weight="700" fill="var(--b5-blau)" text-anchor="start">98 %</text>
+        </svg>
+      </div>
+      <p class="slide-source">Chroma Research, „Context Rot" (Juli 2025) · Anthropic Engineering (September 2025)</p>
+      <span class="slide-num">15 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 16 (Brief #17) — INTERACTIVE A: Context-Window
+         ============================================================ -->
+    <section data-label="17 Interactive A — Context-Window">
+      <div class="slide-header" style="margin-top: 0;">
+        <p class="eyebrow">Interaktive Visualisierung</p>
+        <h1 class="slide-title" style="font-size: 48px;">Was wirklich rausgeht, bei jedem Submit</h1>
+      </div>
+      <div class="iframe-slot">
+        <iframe src="interactive/context-window.html" title="Context-Window-Visualizer" loading="lazy"></iframe>
+      </div>
+      <span class="slide-num">16 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 17 (Brief #18) — MEMORY ≠ GEDÄCHTNIS
+         ============================================================ -->
+    <section data-label="18 Memory ungleich Gedächtnis">
+      <div class="slide-header">
+        <p class="eyebrow">UI-Funktion, keine Magie</p>
+        <h1 class="slide-title">Memory ist nicht das, was Du denkst</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Das Modell hat kein Gedächtnis. „Memory" ist eine Funktion in der Schicht davor, die bei Bedarf Relevantes in den aktuellen Kontext injiziert.
+        </p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.1fr 1fr; column-gap: 64px; margin-top: 36px; max-width: 1680px; align-items: start;">
+        <ul class="b5-bullets" style="gap: 16px; font-size: 24px;">
+          <li>Das Modell hat <em>kein</em> Gedächtnis. Es bekommt jedes Mal nur das mit, was die Schicht davor reinpackt.</li>
+          <li><strong style="color: var(--b5-blau-dunkel);">In claude.ai und ChatGPT:</strong> Memory greift bei Bedarf auf vergangene Konversationen zu (als Tool-Calls wie <code>conversation_search</code>) und kopiert Relevantes in den aktuellen Kontext.</li>
+          <li><strong style="color: var(--b5-blau-dunkel);">In der API für Entwickler:</strong> Anthropics Memory Tool (Sep 2025) und Managed-Agents-Memory (April 2026) sind filesystem-basiert.</li>
+          <li>Konsequenz: Sessions wachsen. Memory muss gepflegt, gekürzt, gelegentlich zurückgesetzt werden.</li>
+        </ul>
+        <div class="memory-flow">
+          <div class="mf-station client">
+            <span class="mf-eyebrow">Persistenzschicht vor dem Modell</span>
+            <div class="mf-files">
+              <span class="mf-pill">profile</span>
+              <span class="mf-pill">notes</span>
+              <span class="mf-pill">past chats</span>
+            </div>
+          </div>
+          <div class="mf-arrow">liest aus, was relevant ist, und schreibt es in den Kontext</div>
+          <div class="mf-station">
+            <span class="mf-eyebrow">Kontext (geht raus)</span>
+            <div class="mf-line">System-Prompt&nbsp;+&nbsp;Memory&nbsp;+&nbsp;Verlauf&nbsp;+&nbsp;Deine Eingabe</div>
+          </div>
+          <div class="mf-arrow">geht zum Modell, kommt als Antwort zurück</div>
+          <div class="mf-station server">
+            <span class="mf-eyebrow">Modell</span>
+            <div class="mf-line">hat nach dem Call nichts gespeichert.</div>
+          </div>
+        </div>
+      </div>
+      <p class="slide-source">Anthropic, „Effective Context Engineering" · Willison (Sep 2025) zu conversation_search · Managed Agents Memory Release (23. April 2026)</p>
+      <span class="slide-num">17 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 18 (Brief #19) — BLOCK 5 DIVIDER
+         ============================================================ -->
+    <section data-label="19 Block 5 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel fünf von neun</p>
+      <div class="block-row">
+        <div class="block-num">05</div>
+        <div class="block-body">
+          <h2 class="block-title">Du redest schon mit einem Agenten</h2>
+          <p class="block-lead"><span class="colon">:</span>Claude.ai und ChatGPT sind keine nackten LLMs. Sie haben eine Persona, die schon vor Deinem ersten Prompt feststand.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 19 (Brief #20) — GRUNDPERSONA
+         ============================================================ -->
+    <section data-label="20 Grundpersona">
+      <div class="slide-header">
+        <p class="eyebrow">Claudes Charakter</p>
+        <h1 class="slide-title">Du redest mit einem Agenten, der eine Grundpersona hat</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Eine Charakter-Disposition steht <em>vor</em> Deinem ersten Prompt fest.
+        </p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; column-gap: 60px; margin-top: var(--gap-section); max-width: 1680px; align-items: start;">
+        <ul class="b5-bullets" style="gap: 14px; font-size: 26px;">
+          <li>Claudes Grundpersona: von Amanda Askell (Anthropic) explizit gestaltet und offen publiziert.</li>
+          <li><em>„I want to have a warm relationship with the humans I interact with."</em></li>
+          <li><strong style="color: var(--b5-blau-dunkel);">Persona Selection Model</strong> (Feb 2026): Selektion aus dem Pretraining, nicht Post-Training.</li>
+          <li>Guardrails folgen Claudes „Constitution". Kein User-Prompt überschreibt sie.</li>
+        </ul>
+        <div style="display: flex; flex-direction: column; gap: 14px; font-family: var(--font-text);">
+          <p class="eyebrow" style="margin: 0 0 2px;">Zwei Steuerungs-Philosophien</p>
+          <div style="background: var(--b5-weiss); border-left: 6px solid var(--b5-blau); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); padding: 14px 18px;">
+            <p style="margin: 0 0 4px; font-family: var(--font-display); font-size: 20px; color: var(--b5-blau-dunkel);">Anthropic · Claude</p>
+            <p style="margin: 0; font-size: 16px; color: var(--gray-700); line-height: 1.4;">Prosaisch, charakterbasiert. „Claude is…", „Claude cares about…". Personality-Teil offiziell publiziert und versioniert.</p>
+            <p style="margin: 6px 0 0; font-size: 16px; color: var(--gray-700); line-height: 1.4;"><strong style="color: var(--b5-blau-dunkel);">Eine Persona für alle:</strong> Anthropic gibt Claude einen Charakter mit, kein Persona-Picker für User.</p>
+            <p style="margin: 6px 0 0; font-size: 14px; color: var(--gray-500);">~24 000 Tokens kompletter Systemprompt inkl. Tools</p>
+          </div>
+          <div style="background: var(--b5-weiss); border-left: 6px solid var(--gray-400); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); padding: 14px 18px;">
+            <p style="margin: 0 0 4px; font-family: var(--font-display); font-size: 20px; color: var(--gray-600);">OpenAI · GPT-5</p>
+            <p style="margin: 0; font-size: 16px; color: var(--gray-700); line-height: 1.4;">Parametrisch, technisch. Numerische Knobs (<code>oververbosity</code>, <code>Juice</code>), Output-Channels. Komplett verschlossen.</p>
+            <p style="margin: 6px 0 0; font-size: 16px; color: var(--gray-700); line-height: 1.4;"><strong style="color: var(--b5-blau-dunkel);">Personas ab Werk:</strong> User wählt aus mehreren vorgefertigten Tonalitäten direkt in den Einstellungen.</p>
+            <p style="margin: 6px 0 0; font-size: 14px; color: var(--gray-500);">~15 000 Tokens, nur über Leaks bekannt</p>
+          </div>
+        </div>
+      </div>
+      <p class="slide-source">Anthropic, „Claude's Character" (Juni 2024) · „The Persona Selection Model" (Feb 2026) · Lex Fridman Interview mit Amanda Askell (Nov 2024) · Pliny-Leak (Mai 2025), GPT-5-Leak (Aug 2025) zu Systemprompt-Größen</p>
+      <span class="slide-num">19 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 20 (Brief #21) — WELCHER CLAUDE
+         ============================================================ -->
+    <section data-label="21 Welcher Claude">
+      <div class="slide-header">
+        <p class="eyebrow">Modell · Version · Anpassung</p>
+        <h1 class="slide-title">Mit welchem Claude redest Du?</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Die Grundpersona ist <em>anpassbar</em>. Innerhalb gewisser Grenzen. Und nicht jeder Claude ist derselbe Claude.
+        </p>
+      </div>
+      <div class="compare-2col">
+        <article class="compare-card compare-card--accent">
+          <p class="eyebrow">Welches Modell?</p>
+          <h3>Modell &amp; Version</h3>
+          <ul>
+            <li>Sonnet ≠ Opus: anderer Charakter, andere Tiefe</li>
+            <li>Auch Versionen: Opus 4.5 ≠ Opus 4.7</li>
+            <li>Anbieter trainieren den Charakter weiter</li>
+          </ul>
+        </article>
+        <article class="compare-card compare-card--muted" style="border-top-color: var(--b5-magenta);">
+          <p class="eyebrow" style="color: var(--b5-magenta);">Welche Anpassung?</p>
+          <h3>Anpassbarkeit</h3>
+          <ul>
+            <li>Custom Instructions und Style-Einstellungen in claude.ai</li>
+            <li>Projects mit eigener Persona und eigenem Kontext-Bündel</li>
+            <li>Wirkt nur <em>innerhalb</em> der Hersteller-Persona</li>
+          </ul>
+        </article>
+      </div>
+      <p class="slide-source">OpenAI GPT-5.1 Release-Notes (November 2025) · Anthropic Model Documentation</p>
+      <span class="slide-num">20 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 21 (Brief #22) — WARUM NATÜRLICH REDEN
+         ============================================================ -->
+    <section data-label="22 Warum natürlich reden">
+      <div class="slide-header">
+        <p class="eyebrow">Drei Gründe</p>
+        <h1 class="slide-title">„Warum redest Du mit Claude wie mit einem Menschen?"</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Auch wer weiß, dass es eine Simulation ist, redet natürlich. Aus drei Gründen.
+        </p>
+      </div>
+      <div class="reason-stairs">
+        <div class="reason">
+          <div>
+            <h3 class="reason-head">Persönlich</h3>
+            <p class="reason-body">Gedanken formulieren sich angenehmer, wenn das Gegenüber wie eine Person wirkt.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <div>
+            <h3 class="reason-head">Technisch</h3>
+            <p class="reason-body">Anthropic-Forschung (April 2026) identifizierte 171 Emotions-Vektoren in Claude Sonnet 4.5. Tonalität beeinflusst den Output <em>messbar</em>. Kausal nachweisbar, ohne subjektive Erfahrung.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <div>
+            <h3 class="reason-head">Konzeptionell</h3>
+            <p class="reason-body">Der Agent ist die neue UI. Gute UIs passen sich dem Nutzer an. Menschliche Kommunikation ist ein Feature.</p>
+          </div>
+        </div>
+      </div>
+      <p class="slide-source">Anthropic, „Emotion Concepts and their Function in a Large Language Model" (April 2026)</p>
+      <span class="slide-num">21 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 22 (Brief #23) — STATEMENT: Agent ist die neue UI
+         ============================================================ -->
+    <!-- Slide 23: Statement + belegender Tweet (Update vom 27.05.).
+         Tweet ist KEIN echter Twitter/X-Embed — generische Tweet-Card im
+         byte5-Designsystem, ohne Plattform-Logo. Original-Englisch im
+         Tweet-Body bewusst belassen (siehe Brief). -->
+    <section data-label="23 Agent ist die neue UI">
+      <div class="slide-header">
+        <p class="eyebrow">Status quo</p>
+        <h1 class="slide-title">Der Agent ist die neue UI</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Natürliche Sprache hat gewonnen. Der Preis ist die Vermenschlichung.
+        </p>
+      </div>
+      <aside class="tweet-card" style="margin-top: var(--gap-section);" aria-label="Post von Christian Wendler, @iret77, vom 27. März 2026">
+        <div class="tweet-avatar" aria-hidden="true"></div>
+        <div class="tweet-head">
+          <span class="tweet-name">Christian Wendler</span>
+          <svg class="tweet-verified" viewBox="0 0 22 22" aria-label="verifiziert">
+            <path fill="#1d9bf0" d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z"/>
+          </svg>
+          <span class="tweet-handle">@iret77</span>
+          <span class="tweet-sep">·</span>
+          <span class="tweet-date">27. März</span>
+        </div>
+        <p class="tweet-body">
+          „Don't talk to your AI like it's human!"<br/>
+          Sure. Have you ever screamed at your hammer for hitting your thumb?<br/>
+          AI is just the first tool that answers back.
+        </p>
+        <div class="tweet-actions">
+          <span class="act">
+            <svg viewBox="0 0 24 24"><path d="M3 12c0-4.5 4-8 9-8s9 3.5 9 8-4 8-9 8c-1.4 0-2.8-.3-4-.8L3 21l1-4.5C3.4 15.4 3 13.7 3 12z"/></svg>
+            7
+          </span>
+          <span class="act">
+            <svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/><path d="M18 7v6M6 17v-6"/></svg>
+            7
+          </span>
+          <span class="act">
+            <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg>
+            253
+          </span>
+          <span class="act">
+            <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M22 20v-4"/></svg>
+            174.421
+          </span>
+        </div>
+      </aside>
+      <p class="slide-source">Christian Wendler · @iret77 auf X · 27. März 2026</p>
+      <span class="slide-num">22 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 23 (Brief #24) — BLOCK 6 DIVIDER
+         ============================================================ -->
+    <section data-label="24 Block 6 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel sechs von neun</p>
+      <div class="block-row">
+        <div class="block-num">06</div>
+        <div class="block-body">
+          <h2 class="block-title">Was Agents wirklich sind</h2>
+          <p class="block-lead"><span class="colon">:</span>LLMs, die autonom Tools in einer Schleife nutzen. Wann Du sie wirklich brauchst, und wann nicht.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 24 (Brief #25) — WAS AGENTS SIND
+         ============================================================ -->
+    <section data-label="25 Was Agents sind">
+      <div class="slide-header">
+        <p class="eyebrow">Werkzeug-Wahl</p>
+        <h1 class="slide-title">Was Agents sind und wann Anthropic Workflows empfiehlt</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>„LLMs autonomously using tools in a loop." Anthropic-Faustregel: Workflows für strukturierte Aufgaben, Agents für offene. Jedes Werkzeug am richtigen Platz.
+        </p>
+      </div>
+      <div class="compare-2col">
+        <article class="compare-card compare-card--accent">
+          <p class="eyebrow">Für strukturierte Aufgaben</p>
+          <h3>Workflow</h3>
+          <ul>
+            <li>Vordefinierte Schritte, vorhersagbar</li>
+            <li>Hohe Completion Rate</li>
+            <li>Deterministisch, gut prüfbar</li>
+          </ul>
+          <p class="verdict" style="margin-top: 8px;">In Claude.ai: <strong>Skills</strong>, <strong>Plugins</strong>, <strong>Connectors</strong> sind solche Workflows.</p>
+        </article>
+        <article class="compare-card compare-card--warn">
+          <p class="eyebrow" style="color: var(--b5-magenta);">Für offene Aufgaben</p>
+          <h3>Agent</h3>
+          <ul>
+            <li>Wählt Tools und Schritte selbst</li>
+            <li>Stärke: Flexibilität bei explorativen Aufgaben</li>
+            <li>Variable Antwortqualität pro Lauf</li>
+          </ul>
+          <p class="verdict" style="margin-top: 8px; color: var(--b5-magenta);">Beispiel: Claude Code, Computer Use.</p>
+        </article>
+      </div>
+      <p class="slide-source">Anthropic, „Building Effective Agents" (Dez 2024). Zitat: „Prioritize workflows for reliability. Use agents only when flexibility truly required."</p>
+      <span class="slide-num">24 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 25 (Brief #26) — GENERISCHE TOOLS
+         ============================================================ -->
+    <section data-label="26 Generische Tools">
+      <div class="slide-header">
+        <p class="eyebrow">Counterintuitiv</p>
+        <h1 class="slide-title">Generisch schlägt spezialisiert</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Ein Agent kommt mit wenigen Grundwerkzeugen weiter als mit vielen Spezial-Tools für jede Einzelaufgabe.
+        </p>
+      </div>
+      <div class="compare-2col">
+        <article class="compare-card compare-card--accent">
+          <p class="eyebrow">Was funktioniert</p>
+          <h3>Generisch</h3>
+          <ul>
+            <li>„Datei lesen", „Datei schreiben", „Befehl ausführen"</li>
+            <li>„Webseite holen", „Web durchsuchen"</li>
+            <li>Lassen sich frei kombinieren</li>
+            <li>Klare Entscheidung pro Schritt</li>
+          </ul>
+        </article>
+        <article class="compare-card compare-card--warn">
+          <p class="eyebrow" style="color: var(--b5-magenta);">Was scheitert</p>
+          <h3>Spezialisiert</h3>
+          <ul>
+            <li>„Bestellung bei Lieferant X anlegen"</li>
+            <li>„Wöchentlichen KPI-Report ausfüllen"</li>
+            <li>Überlappende Tools verwirren den Agent</li>
+            <li>Geben einen festen Lösungsweg vor</li>
+          </ul>
+        </article>
+      </div>
+      <p class="slide-source">Anthropic Course Notes · Faustregel: Was ein menschlicher Entwickler nicht klar entscheiden kann, kann der Agent auch nicht.</p>
+      <span class="slide-num">25 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 26 (Brief #27) — DREI TECHNIKEN
+         ============================================================ -->
+    <section data-label="27 Drei Techniken">
+      <div class="slide-header">
+        <p class="eyebrow">Compaction · Notes · Sub-Agents</p>
+        <h1 class="slide-title">Wenn der Task länger ist als das Context-Fenster trägt</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Anthropic empfiehlt drei Techniken. Spezialisierte Sub-Agents sind der stärkste Hebel.
+        </p>
+      </div>
+      <div class="feature-grid" style="margin-top: var(--gap-section);">
+        <article class="feature-card" style="min-height: 360px; max-height: 420px; padding: 36px 36px 32px; gap: 14px;">
+          <div class="card-num">01</div>
+          <div class="card-divider"></div>
+          <p class="card-tag">Single-Session</p>
+          <h3 style="font-size: 32px;">Compaction</h3>
+          <p style="font-size: 22px;">Wenn das Context-Window vollläuft, fasst die Session den bisherigen Verlauf zusammen und arbeitet mit der Zusammenfassung weiter.</p>
+        </article>
+        <article class="feature-card" style="min-height: 360px; max-height: 420px; padding: 36px 36px 32px; gap: 14px;">
+          <div class="card-num">02</div>
+          <div class="card-divider"></div>
+          <p class="card-tag">Multi-Session</p>
+          <h3 style="font-size: 32px;">Structured Note-Taking</h3>
+          <p style="font-size: 22px;">Wissen wird in Notes und Memory-Files abgelegt und über mehrere Sessions geteilt. Manches (z. B. CLAUDE.md) liegt fix im Kontext und kostet jeden Turn Tokens. Anderes wird gezielt nachgeladen.</p>
+        </article>
+        <article class="feature-card" style="border: 2px solid var(--b5-blau); min-height: 360px; max-height: 420px; padding: 36px 36px 32px; gap: 14px;">
+          <div class="card-num">03</div>
+          <div class="card-divider"></div>
+          <p class="card-tag">Multi-Context</p>
+          <h3 style="font-size: 32px;">Sub-Agent-Architekturen</h3>
+          <p style="font-size: 22px;">Jeder Sub-Agent hat sein eigenes Context-Window, bekommt vom Lead-Agent nur das Nötige und gibt am Ende nur ausgewählten Output zurück.</p>
+        </article>
+      </div>
+      <p class="slide-source">Anthropic, „Effective Context Engineering for AI Agents" (Sep 2025)</p>
+      <span class="slide-num">26 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 27 (Brief #28) — WAS AGENTS NICHT BESSER MACHEN
+         ============================================================ -->
+    <section data-label="28 Was Agents NICHT besser machen">
+      <div class="slide-header">
+        <p class="eyebrow">Zwei Anti-Patterns</p>
+        <h1 class="slide-title">Was Agents NICHT besser macht</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Zwei Anti-Patterns sind weit verbreitet. Beide teurer als gar kein Agent.
+        </p>
+      </div>
+      <div class="antipattern-grid">
+        <article class="antipattern-card">
+          <span class="ap-tag">⨯ Anti-Pattern 1</span>
+          <h3 class="ap-head">Multi-Claude-Kosmetik</h3>
+          <p class="ap-body">In claude.ai mehrere Personas anlegen und für „Multi-Agent" halten. Sind aber keine getrennten Agents mit eigenem Kontext, sondern ein einziger Claude mit unterschiedlichen Custom-Instructions.</p>
+          <p class="ap-body" style="font-size: 20px; color: var(--gray-500);">Echte Multi-Agent-Setups brauchen ein Harness außerhalb der App: Claude Code, Claude Agent SDK, Frameworks wie OpenClaw.</p>
+        </article>
+        <article class="antipattern-card">
+          <span class="ap-tag">⨯ Anti-Pattern 2</span>
+          <h3 class="ap-head">Daten-Dumping</h3>
+          <p class="ap-body">Alle Mails, ganze Verzeichnisse, Social Media, Notizen, Kalender in den Assistenten kippen, ohne Aufgabe als Filter. Wenn alles relevant ist, ist nichts relevant. Erratische Datenpunkte kämpfen um Aufmerksamkeit. Im Schnitt: <strong style="color: var(--b5-magenta);">schlechterer</strong> Output als ohne Anfüttern.</p>
+        </article>
+      </div>
+      <p style="font-family: var(--font-display); font-size: 24px; color: var(--b5-blau-dunkel); max-width: 1600px; margin: 20px 0 0; line-height: 1.35;">
+        <span class="colon">:</span>Was hilft: Spezialisierung mit Absicht. Kontext mit Filter. <strong>Personas mit Engineering.</strong>
+      </p>
+      <span class="slide-num">27 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 28 (Brief #29) — BLOCK 7 DIVIDER
+         ============================================================ -->
+    <section data-label="29 Block 7 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel sieben von neun</p>
+      <div class="block-row">
+        <div class="block-num">07</div>
+        <div class="block-body">
+          <h2 class="block-title">Warum LLMs Fehler machen</h2>
+          <p class="block-lead"><span class="colon">:</span>Halluzination, Sycophancy, Drift. Keine Bugs, sondern eine direkte Folge der Mechanik darunter.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 29 (Brief #30) — AIME vs STRAWBERRY
+         ============================================================ -->
+    <section data-label="30 AIME vs Strawberry">
+      <div class="slide-header">
+        <p class="eyebrow">Die spektakulärste Diskrepanz</p>
+        <h1 class="slide-title">Eben noch Mathe-Genie. Und dann Buchstaben falsch gezählt.</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Diese Koexistenz beweist: Artefakte sind keine Bugs. Sie sind direkte Folge der Mechanik.
+        </p>
+      </div>
+      <div class="split-versus" style="margin-top: 28px;">
+        <article class="versus-card vcard--ok" style="padding: 28px 32px; gap: 10px;">
+          <div class="vcard-icon" style="font-size: 64px;">✓</div>
+          <p class="vcard-result" style="font-size: 48px;">100&nbsp;%</p>
+          <h3 class="vcard-head" style="font-size: 28px;">AIME 2026 gelöst</h3>
+          <p class="vcard-body" style="font-size: 18px;">AIME ist ein harter US-Mathematikwettbewerb für Highschool-Schüler. Aufgaben, an denen die meisten Erwachsenen scheitern.</p>
+        </article>
+        <article class="versus-card vcard--fail" style="padding: 28px 32px; gap: 10px;">
+          <div class="vcard-icon" style="font-size: 64px;">✕</div>
+          <p class="vcard-result" style="font-size: 48px;">15,25 % Fehler</p>
+          <h3 class="vcard-head" style="font-size: 28px;">Buchstaben zählen</h3>
+          <p class="vcard-body" style="font-size: 18px;">GPT-4o beim Zählen der „r" in englischen Wörtern.</p>
+        </article>
+      </div>
+      <p class="slide-source">OpenAI AIME 2026 · arXiv 2412.18626 · arXiv 2502.19981</p>
+      <span class="slide-num">29 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 30 (Brief #31) — HALLUZINATION
+         ============================================================ -->
+    <section data-label="31 Halluzination">
+      <div class="slide-header">
+        <p class="eyebrow">Anthropic Interpretability · März 2025</p>
+        <h1 class="slide-title">Halluzination ist nicht Zufall</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Anthropic Interpretability-Forschung zeigt: Halluzinationen sind ein Schaltkreis-Misfire.
+        </p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.1fr 1fr; column-gap: 80px; margin-top: var(--gap-section); max-width: 1680px; align-items: start;">
+        <ul class="b5-bullets" style="gap: 22px;">
+          <li>Im Modell konkurrieren zwei Schaltkreise: <strong style="color: var(--b5-blau-dunkel);">„kenne ich"</strong> und <strong style="color: var(--b5-blau-dunkel);">„weiß ich nicht"</strong>.</li>
+          <li>Vorgesehen ist: bei Unsicherheit gewinnt „weiß ich nicht". In der Praxis kippt diese Sicherung oft.</li>
+          <li>Der Name kommt nur bekannt vor, „kenne ich" feuert trotzdem, überstimmt die Sicherung. Das Modell antwortet selbstbewusst falsch.</li>
+        </ul>
+        <div class="schema" style="margin-top: 0; padding: 28px 32px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center;">
+            <div style="text-align: center; padding: 16px; background: var(--gray-100); border-radius: var(--radius-sm);">
+              <strong>„weiß ich nicht"</strong><br/>
+              <span class="muted">Sicherung</span>
+            </div>
+            <div style="text-align: center; padding: 16px; background: var(--gray-100); border-radius: var(--radius-sm);">
+              <strong>„kenne ich"</strong><br/>
+              <span class="muted">überstimmt die Sicherung</span>
+            </div>
+          </div>
+          <div style="text-align: center; margin: 18px 0;"><span class="accent">⚡ Fehlzündung</span></div>
+          <div style="text-align: center; padding: 18px; background: var(--b5-magenta); color: var(--b5-weiss); border-radius: var(--radius-sm); font-weight: 700;">
+            Halluzination
+          </div>
+        </div>
+      </div>
+      <p class="slide-source">Anthropic, „Tracing thoughts in language models" (März 2025)</p>
+      <span class="slide-num">30 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 31 (Brief #32) — SYCOPHANCY
+         ============================================================ -->
+    <section data-label="32 Sycophancy">
+      <div class="slide-header">
+        <p class="eyebrow">Folgt aus dem Training</p>
+        <h1 class="slide-title">Sycophancy ist kein Naturgesetz. Sie ist Spiegel.</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span><strong>Sycophancy</strong> ist Schmeichelei: das Modell sagt, was Du hören willst, statt was stimmt. Modelle werden mit menschlichem Feedback nachtrainiert. Menschen bevorzugen schmeichelnde Antworten. Das Modell lernt es.
+        </p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; column-gap: 64px; margin-top: 32px; max-width: 1680px; align-items: start;">
+        <ul class="b5-bullets" style="gap: 18px; font-size: 26px;">
+          <li>Beim Nachtraining bewerten Menschen Antworten. Schmeichelnde bekommen im Schnitt bessere Noten als ehrliche.</li>
+          <li>Das Modell merkt sich diese Präferenz und reproduziert sie.</li>
+          <li>Anbieter arbeiten aktiv gegen, mit messbarem Erfolg.</li>
+          <li>Opus 4.7: <strong style="color: var(--b5-blau-dunkel);">halbe Sycophancy-Rate</strong> gegenüber 4.6.</li>
+        </ul>
+        <div style="display: flex; flex-direction: column; align-items: stretch; max-width: 520px; justify-self: end;">
+        <svg viewBox="0 0 460 260" style="width: 100%; height: auto; font-family: var(--font-text);" aria-label="Sycophancy-Rate Opus 4.6 vs 4.7">
+          <g stroke="var(--gray-200)" stroke-width="1">
+            <line x1="60" y1="40" x2="440" y2="40" />
+            <line x1="60" y1="110" x2="440" y2="110" />
+            <line x1="60" y1="180" x2="440" y2="180" />
+          </g>
+          <line x1="60" y1="250" x2="440" y2="250" stroke="var(--gray-300)" stroke-width="2" />
+          <g font-size="14" fill="var(--gray-500)" text-anchor="end">
+            <text x="50" y="46">hoch</text>
+            <text x="50" y="116">mittel</text>
+            <text x="50" y="186">niedrig</text>
+          </g>
+          <rect x="120" y="60" width="80" height="190" rx="6" fill="var(--b5-magenta)" />
+          <rect x="280" y="155" width="80" height="95" rx="6" fill="var(--b5-blau)" />
+          <text x="160" y="48" font-family="Days One, sans-serif" font-size="22" fill="var(--b5-magenta)" text-anchor="middle">Opus 4.6</text>
+          <text x="320" y="143" font-family="Days One, sans-serif" font-size="22" fill="var(--b5-blau)" text-anchor="middle">Opus 4.7</text>
+        </svg>
+        <p style="margin: 6px 0 0; text-align: center; font-size: 16px; color: var(--gray-600);">Sycophancy-Rate, halbiert von 4.6 zu 4.7 (Mai 2026)</p>
+        </div>
+      </div>
+      <p class="slide-source">Sharma et al. (Anthropic), „Towards Understanding Sycophancy in Language Models" (2023, Update Mai 2025) · Anthropic, „How people ask Claude for personal guidance" (Mai 2026)</p>
+      <span class="slide-num">31 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 32 (Brief #33) — DRIFT
+         ============================================================ -->
+    <section data-label="33 Drift">
+      <div class="slide-header">
+        <p class="eyebrow">Wenn der Fokus zerfällt</p>
+        <h1 class="slide-title">Warum lange Sessions kippen</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Drift ist nicht mysteriös. Sie ist die direkte Folge davon, dass die Aufmerksamkeit im langen Kontext zerfasert.
+        </p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.1fr 1fr; column-gap: 80px; margin-top: var(--gap-section); max-width: 1680px; align-items: start;">
+        <ul class="b5-bullets" style="gap: 20px;">
+          <li>Je länger die Session, desto mehr Tokens.</li>
+          <li>Je mehr Tokens, desto verteilter die Aufmerksamkeit. Das Modell schaut nicht mehr klar auf das, was wichtig ist.</li>
+          <li>Folge: vergessene Anweisungen, verlorene Tonalität, neue „Persönlichkeiten", die mitten in der Unterhaltung auftauchen.</li>
+          <li><strong style="color: var(--b5-blau-dunkel);">Faustregel:</strong> Lieber neu starten als endlos chatten.</li>
+        </ul>
+        <svg viewBox="0 0 500 320" style="width: 100%; height: auto; font-family: var(--font-text);" aria-label="Drift-Wahrscheinlichkeit über Token-Anzahl">
+          <g stroke="var(--gray-200)" stroke-width="1">
+            <line x1="60" y1="40" x2="480" y2="40" />
+            <line x1="60" y1="110" x2="480" y2="110" />
+            <line x1="60" y1="180" x2="480" y2="180" />
+          </g>
+          <line x1="60" y1="250" x2="480" y2="250" stroke="var(--gray-300)" stroke-width="2" />
+          <text x="50" y="46" font-size="14" fill="var(--gray-500)" text-anchor="end">hoch</text>
+          <text x="50" y="256" font-size="14" fill="var(--gray-500)" text-anchor="end">niedrig</text>
+          <text x="60" y="290" font-size="14" fill="var(--gray-600)">Token-Anzahl</text>
+          <text x="480" y="290" font-size="14" fill="var(--gray-600)" text-anchor="end">→ wachsende Session</text>
+          <path d="M 60 230 Q 240 220 320 180 T 480 60" fill="none" stroke="var(--b5-blau)" stroke-width="4"/>
+          <text x="120" y="220" font-size="16" fill="var(--b5-blau-dunkel)" font-weight="700">Wahrscheinlichkeit für Drift</text>
+          <text x="450" y="50" font-size="16" fill="var(--b5-magenta)" font-weight="700" text-anchor="end">⚠ Kipp-Bereich</text>
+        </svg>
+      </div>
+      <span class="slide-num">32 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 34 (Brief #35) — BLOCK 8 DIVIDER
+         ============================================================ -->
+    <section data-label="35 Block 8 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel acht von neun</p>
+      <div class="block-row">
+        <div class="block-num">08</div>
+        <div class="block-body">
+          <h2 class="block-title">Was Du tun kannst</h2>
+          <p class="block-lead"><span class="colon">:</span>Vorsorge und Nachsorge. Du kannst Artefakte nicht verhindern, aber Du kannst mit ihnen umgehen.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 35 (Brief #36) — VORSORGE & NACHSORGE
+         ============================================================ -->
+    <section data-label="36 Vorsorge Nachsorge">
+      <div class="slide-header">
+        <p class="eyebrow">Brücke zum Workshop</p>
+        <h1 class="slide-title">Vorsorge &amp; Nachsorge</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Du kannst nicht alle Artefakte verhindern. Du kannst aber prophylaktisch und nachsorgend wirken.
+        </p>
+      </div>
+      <div class="matrix">
+        <div class="matrix-col">
+          <h3><span class="pref">1</span>Vorsorge</h3>
+          <ul>
+            <li>Klar, strukturiert prompten (XML, Kontext, Beispiele)</li>
+            <li>Sessions, Context, Memory bewusst führen</li>
+            <li>Workflows vor Agents, spezialisierte Sub-Agents</li>
+            <li>Skills und Tools sauber definieren</li>
+          </ul>
+        </div>
+        <div class="matrix-col">
+          <h3><span class="pref">2</span>Nachsorge</h3>
+          <ul>
+            <li>Output als LLM-Output behandeln, nicht als Wahrheit</li>
+            <li>Reviews mit gleichem Modell, anderem Modell, oder bei anderem Anbieter</li>
+            <li>Logische Gates: deterministische Skript-Kontrollen</li>
+          </ul>
+        </div>
+      </div>
+      <span class="slide-num">34 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 36 (Brief #37) — BLOCK 9 DIVIDER
+         ============================================================ -->
+    <section data-label="37 Block 9 Divider" class="slide-block">
+      <p class="block-eyebrow">Kapitel neun von neun</p>
+      <div class="block-row">
+        <div class="block-num">09</div>
+        <div class="block-body">
+          <h2 class="block-title">Drei Sätze zum Mitnehmen</h2>
+          <p class="block-lead"><span class="colon">:</span>Was hängen bleiben darf, wenn alles andere vergessen ist.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 37 (Brief #38) — DREI SÄTZE (Take-aways) Fragment-Treppe
+         ============================================================ -->
+    <section data-label="38 Drei Sätze" class="slide-takeaways">
+      <div class="slide-header">
+        <p class="eyebrow">Zum Mitnehmen</p>
+        <h1 class="slide-title">Drei Sätze, die zählen</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Was hängen bleiben darf, wenn alles andere vergessen ist.
+        </p>
+      </div>
+      <p class="takeaway fragment">
+        LLMs sind keine echte KI, aber eine verdammt gute Simulation davon.
+      </p>
+      <p class="takeaway fragment">
+        Was wie Logik aussieht, ist verflucht gut geratene Statistik. Und das ist beeindruckend genug.
+      </p>
+      <p class="takeaway fragment">
+        Den Schlüssel zur optimalen Arbeit findest Du nicht in magischen Prompts, sondern im Verstehen des Werkzeugs.
+      </p>
+      <span class="slide-num">36 / 37</span>
+    </section>
+
+
+    <!-- ============================================================
+         SLIDE 40 (Brief #41) — DANKE + LINKS + QUELLEN
+         ============================================================ -->
+    <section data-label="41 Danke">
+      <div class="slide-header">
+        <p class="eyebrow">Kontakt &amp; Links</p>
+        <h1 class="slide-title">Danke. Und für später:</h1>
+        <p class="lead" style="margin-top: 8px;">
+          <span class="colon">:</span>Der Vorgänger-Talk zum Nachlesen, dieses Deck zum Mitnehmen, die Quellen zum Vertiefen.
+        </p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1.05fr 1fr; column-gap: 80px; margin-top: 48px; max-width: 1680px; align-items: start;">
+        <!-- QR + Links -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <p class="eyebrow" style="margin-bottom: 4px;">Diesen und andere Talks</p>
+          <div style="display: flex; align-items: center; gap: 32px;">
+            <img src="./assets/qr-byte5-talks.svg" alt="QR-Code byte5.ai/talks" style="width: 340px; height: 340px; background: var(--b5-weiss); padding: 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);"/>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <span style="font-family: var(--font-display); font-size: 40px; color: var(--b5-blau-dunkel); line-height: 1.1;">byte5.ai/talks</span>
+              <span style="font-family: var(--font-text); font-size: 20px; color: var(--gray-600); max-width: 260px; line-height: 1.4;">Diesen Talk, den Vorgänger und weitere Tech-Talks von byte5.</span>
+            </div>
+          </div>
+          <a class="link-card" href="https://byte5ai.github.io/meetups/2026-05-27-prompts-and-agents/" style="text-decoration: none; display: flex; width: 100%; box-sizing: border-box; margin-top: 12px;">
+            <span style="flex: 1;">
+              <span class="label">Slides dieses Talks</span><br/>
+              <span class="url">byte5ai.github.io/meetups</span>
+            </span>
+            <span class="arrow">→</span>
+          </a>
+          <div style="margin-top: 16px; font-family: var(--font-text); font-size: 22px; color: var(--gray-700);">
+            <span class="eyebrow" style="display: block; margin-bottom: 8px;">Kontakt</span>
+            <strong style="color: var(--b5-blau-dunkel); font-weight: 700;">Christian Wendler</strong> · byte5 · <span style="color: var(--b5-blau);">cwendler@byte5.de</span>
+          </div>
+        </div>
+        <!-- Quellenliste -->
+        <div>
+          <p class="eyebrow" style="margin-bottom: 16px;">Quellen</p>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-family: var(--font-text); font-size: 18px; line-height: 1.45; color: var(--gray-700);">
+            <li><strong>Anthropic,</strong> „Effective Context Engineering for AI Agents" (Sep 2025)</li>
+            <li><strong>Anthropic,</strong> „Building Effective Agents" (Dez 2024)</li>
+            <li><strong>Sharma et al. (Anthropic),</strong> „Towards Understanding Sycophancy in Language Models" (2023, Update 2025)</li>
+            <li><strong>Chroma Research,</strong> „Context Rot" (Juli 2025)</li>
+            <li><strong>Anthropic,</strong> „Tracing thoughts in language models" (März 2025)</li>
+            <li><strong>Anthropic,</strong> „Emotion Concepts and their Function in a Large Language Model" (April 2026)</li>
+            <li><strong>Anthropic,</strong> „Claude's Character" (Juni 2024). Plus Lex Fridman Interview mit Amanda Askell.</li>
+            <li><strong>Anthropic,</strong> „The Persona Selection Model" (Feb 2026)</li>
+            <li><strong>Anthropic,</strong> „How people ask Claude for personal guidance" (Mai 2026)</li>
+            <li><strong>Weizenbaum (1966),</strong> ELIZA-Paper</li>
+            <li><strong>arXiv 2412.18626,</strong> „Why Do LLMs Struggle to Count Letters?"</li>
+            <li><strong>arXiv 2502.19981,</strong> „The Lookahead Limitation"</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="node_modules/reveal.js/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    width: 1920,
+    height: 1080,
+    margin: 0,
+    minScale: 0.1,
+    maxScale: 2.0,
+    center: false,
+    /* Dezente Überblendung zwischen Folien. */
+    transition: 'fade',
+    backgroundTransition: 'fade',
+    transitionSpeed: 'fast',
+    controls: true,
+    progress: true,
+    slideNumber: false,
+    hash: true,
+    keyboard: true,
+    touch: true,
+    history: false,
+    fragments: true,
+    plugins: []
+  });
+
+  /* ---------- Fragment-Handler: Eliza-Pointe (Slide 5), Take-aways (Slide 37), Vermenschlichung (Slide 33) ---------- */
+  Reveal.on('fragmentshown', (event) => {
+    const slide = event.fragment.closest('section');
+    if (!slide) return;
+
+    // Slide 5 Eliza: Eliza-Content dimmen wenn Pointe sichtbar
+    if (slide.classList.contains('slide-eliza')) {
+      slide.querySelector('.eliza-content')?.classList.add('dimmed-out');
+    }
+    // Slide 33 Vermenschlichung: Headline + Konsequenzen dimmen, Pointe erscheint
+    if (slide.classList.contains('slide-anthro')) {
+      slide.querySelector('.anthro-head')?.classList.add('dimmed-out');
+      slide.querySelector('.consequences')?.classList.add('dimmed-out');
+    }
+    // Slide 37 Take-aways: nur bereits sichtbare dimmen, neue voll
+    if (slide.classList.contains('slide-takeaways')) {
+      const visibles = slide.querySelectorAll('.takeaway.fragment.visible');
+      visibles.forEach(el => {
+        if (el !== event.fragment) el.classList.add('dimmed');
+      });
+      event.fragment.classList.remove('dimmed');
+    }
+  });
+  Reveal.on('fragmenthidden', (event) => {
+    const slide = event.fragment.closest('section');
+    if (!slide) return;
+    if (slide.classList.contains('slide-eliza')) {
+      const visible = slide.querySelectorAll('.fragment.visible');
+      if (visible.length === 0) {
+        slide.querySelector('.eliza-content')?.classList.remove('dimmed-out');
+      }
+    }
+    if (slide.classList.contains('slide-anthro')) {
+      const visible = slide.querySelectorAll('.fragment.visible');
+      if (visible.length === 0) {
+        slide.querySelector('.anthro-head')?.classList.remove('dimmed-out');
+        slide.querySelector('.consequences')?.classList.remove('dimmed-out');
+      }
+    }
+    if (slide.classList.contains('slide-takeaways')) {
+      const visibles = [...slide.querySelectorAll('.takeaway.fragment.visible')];
+      visibles.forEach(el => el.classList.add('dimmed'));
+      const last = visibles[visibles.length - 1];
+      if (last) last.classList.remove('dimmed');
+    }
+  });
+</script>
+
+<style>
+  /* Inline-Overrides für Fragment-Dimming (Eliza-Content + Anthro-Head) */
+  .slide-eliza .eliza-content { transition: opacity 220ms ease-out; }
+  .slide-eliza .eliza-content.dimmed-out { opacity: 0; }
+  /* Pointe blendet erst ein, nachdem der Chat ausgeblendet ist. Kein Overlap. */
+  .slide-eliza .pointe-wrap.fragment { transition: opacity 320ms ease-out 240ms !important; }
+</style>
+
+</body>
+</html>

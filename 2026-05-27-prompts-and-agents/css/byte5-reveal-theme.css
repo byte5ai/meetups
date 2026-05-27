@@ -1,0 +1,1941 @@
+/* ============================================================
+   byte5 — reveal.js Theme
+   Bringt das byte5 Slide-Deck-Designsystem (Days One, Nunito Sans,
+   1920×1080 Stage, magenta Doppelpunkt, Cyan-Check-Bullets, 13 Slide-
+   Typen) auf reveal.js. Tokens kommen aus byte5-tokens.css.
+
+   Architektur:
+   - reveal.js managed Scaling / Navigation / PDF-Mode (1920×1080).
+   - .reveal .slides > section ist die Bühne pro Slide. Wir resetten
+     reveal.js-Defaults (Text-Center, Padding, Heading-Styles) und
+     legen darüber die byte5-Layouts.
+   - Layout-Klassen sind 1:1 aus dem byte5-deck-template.html
+     übernommen (slide-cover, slide-section, slide-split, ...).
+   ============================================================ */
+
+/* ============================================================
+   1) reveal.js-Defaults für die byte5-Bühne überschreiben
+   ============================================================ */
+
+/* Letterbox-Fläche neutralisieren (war im Template: dunkel-navy) */
+html, body {
+  background: var(--b5-blau-dunkel);
+}
+.reveal {
+  font-family: var(--font-text);
+  font-size: 16px;          /* slide content scaled via type tokens */
+  color: var(--fg);
+  font-weight: 400;
+}
+
+/* Jede Slide ist eine eigene Bühne. Reveal-Defaults aushebeln,
+   damit unsere Layout-CSS aus dem Template wirken. */
+.reveal .slides {
+  text-align: left;
+}
+.reveal .slides > section,
+.reveal .slides > section > section {
+  box-sizing: border-box;
+  font-family: var(--font-text);
+  color: var(--deck-fg);
+  background: var(--deck-bg);
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  overflow: hidden;
+  /* Bühne hat 1920×1080 via Reveal.initialize({width, height}).
+     Reveal setzt position+Größe selbst — wir nur Inhalts-Styling.
+     `height: 100%` damit Flex-Layouts (slide-section, slide-quote)
+     die volle Bühne nutzen können — sonst kollabiert das auf
+     Content-Höhe. */
+  height: 100%;
+  text-align: left;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+/* Reveal-Theme würde Headings centrieren / uppercase setzen — weg damit. */
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+  text-transform: none;
+  text-align: left;
+  margin: 0;
+  text-shadow: none;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+.reveal p { margin: 0; line-height: inherit; }
+.reveal ul, .reveal ol { display: block; }
+.reveal img { margin: 0; border: 0; background: transparent; box-shadow: none; }
+.reveal table { margin: 0; }
+
+/* ============================================================
+   2) Deck-Stage Tokens (entsprechen den :root-Overrides im Template)
+   ============================================================ */
+:root {
+  /* Type scale (slide-appropriate, not web-density). */
+  --type-cover:    128px;
+  --type-section:  180px;
+  --type-mega:     220px;
+  --type-title:     76px;
+  --type-subtitle:  44px;
+  --type-body:      32px;
+  --type-bullet:    34px;
+  --type-small:     24px;
+  --type-eyebrow:   24px;
+
+  /* Spacing (frame padding, vertical gaps). */
+  --pad-x:         120px;
+  --pad-top:       96px;
+  --pad-bottom:    140px;     /* Reserviert "Footer-Zone" für slide-source + slide-num */
+  --gap-title:      52px;
+  --gap-item:       28px;
+  --gap-section:    56px;     /* Vorher 72px — schafft Reserve für lange Stützpunkte */
+  --gap-eyebrow:    18px;
+
+  /* Deck-level brand */
+  --deck-bg:       var(--surface-gradient);
+  --deck-fg:       var(--b5-blau-dunkel);
+}
+
+/* ============================================================
+   3) Slide-Header / Logo / Footer (alle Content-Slides)
+   ============================================================ */
+
+.slide-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--type-title);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--b5-blau-dunkel);
+}
+
+.slide-subtitle {
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: var(--type-subtitle);
+  line-height: 1.25;
+  color: var(--b5-blau-dunkel);
+}
+
+.lead {
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: var(--type-subtitle);
+  line-height: 1.3;
+  color: var(--b5-blau-dunkel);
+  max-width: 1600px;
+}
+
+.body-text {
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: var(--type-body);
+  line-height: 1.55;
+  color: var(--gray-700);
+  max-width: 1200px;
+}
+
+.eyebrow {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: var(--type-eyebrow);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--b5-blau);
+}
+
+.slide-header {
+  /* Kein top-Margin mehr — die Slides hatten ursprünglich ein Logo
+     oben links, dessen Platz hier reserviert war. Logo ist raus,
+     also start der Header direkt unter pad-top. Spart ~80 px
+     Whitespace oberhalb des Eyebrows und schiebt den Footer-Bereich
+     vom Inhalt weg. */
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-eyebrow);
+  max-width: 1600px;
+}
+.slide-header .eyebrow { margin: 0; }
+
+.colon {
+  color: var(--b5-magenta);
+  font-weight: 900;
+  font-family: var(--font-text);
+  margin-right: 0.4em;
+  display: inline-block;
+}
+
+.deck-logo {
+  position: absolute;
+  top: 60px;
+  left: var(--pad-x);
+  height: 56px;
+  width: auto;
+}
+.deck-logo--right { left: auto; right: var(--pad-x); }
+
+.deck-footer {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  bottom: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: var(--type-small);
+  color: var(--gray-500);
+  letter-spacing: 0.04em;
+}
+.deck-footer--dark { color: rgba(255,255,255,0.55); }
+
+.circle-motif {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--b5-blau);
+  pointer-events: none;
+}
+
+/* ============================================================
+   4) Reusable bullet list (cyan check)
+   ============================================================ */
+.b5-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1400px;
+}
+.b5-bullets li {
+  position: relative;
+  padding-left: 52px;
+  font-size: 30px;
+  line-height: 1.4;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+.b5-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.25em;
+  width: 28px;
+  height: 28px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23009FE3' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='4,12 10,18 20,6'/></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Bullets mit hervorgehobener Hauptaussage + Erklärung darunter */
+.b5-bullets.bullets-headed li .bullet-head {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--b5-blau-dunkel);
+  background: rgba(0, 159, 227, 0.12);
+  padding: 4px 12px;
+  border-radius: 6px;
+  border-left: 3px solid var(--b5-blau);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.b5-bullets.bullets-headed li .bullet-body {
+  display: block;
+  color: var(--gray-700);
+  font-weight: 500;
+  line-height: 1.35;
+  font-size: 0.85em;
+}
+
+/* ============================================================
+   SLIDE 01 — COVER (full-bleed photo + big white headline)
+   ============================================================ */
+.reveal .slides > section.slide-cover {
+  padding: 0;
+  background: var(--b5-blau-dunkel);
+  color: var(--b5-weiss);
+}
+.slide-cover .cover-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.slide-cover .cover-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,75,115,0.20) 0%, rgba(0,75,115,0.45) 55%, rgba(0,75,115,0.85) 100%);
+  z-index: 1;
+}
+.slide-cover > *:not(.cover-photo):not(.cover-tint) { z-index: 2; }
+.slide-cover .cover-circle,
+.slide-cover .cover-logo,
+.slide-cover .cover-stack { position: absolute; }
+.slide-cover .cover-stack {
+  left: var(--pad-x);
+  right: var(--pad-x);
+  bottom: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.slide-cover .cover-headline {
+  font-family: var(--font-display);
+  font-size: var(--type-cover);
+  line-height: 1.0;
+  letter-spacing: -0.015em;
+  color: var(--b5-weiss);
+  max-width: 1500px;
+}
+.slide-cover .cover-lead {
+  max-width: 1500px;
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: var(--type-body);
+  color: var(--b5-weiss);
+  line-height: 1.4;
+}
+.slide-cover .cover-circle {
+  top: -220px;
+  right: -200px;
+  width: 620px;
+  height: 620px;
+  background: var(--b5-blau);
+  opacity: 0.92;
+  border-radius: 50%;
+  z-index: 1;
+}
+.slide-cover .cover-logo {
+  top: 88px;
+  left: 120px;
+  height: 80px;
+}
+
+/* ============================================================
+   SLIDE 02 — AGENDA (numbered list)
+   ============================================================ */
+.agenda-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 100px;
+  row-gap: 44px;
+  max-width: 1500px;
+}
+.agenda-list li {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  align-items: start;
+  gap: 28px;
+  padding-bottom: 28px;
+  border-bottom: 2px solid var(--gray-200);
+}
+.agenda-list .num {
+  font-family: var(--font-display);
+  font-size: 44px;
+  color: var(--b5-blau);
+  line-height: 1;
+  padding-top: 4px;
+}
+.agenda-list .item-title {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: 36px;
+  color: var(--b5-blau-dunkel);
+  line-height: 1.2;
+}
+.agenda-list .item-sub {
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: var(--type-small);
+  color: var(--gray-500);
+  margin-top: 6px;
+}
+
+/* ============================================================
+   SLIDE 03 — SECTION DIVIDER (dark navy)
+   ============================================================ */
+.reveal .slides > section.slide-section {
+  background: var(--b5-blau-dunkel);
+  color: var(--b5-weiss);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+}
+.slide-section .sec-eyebrow {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: var(--type-eyebrow);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+.slide-section .sec-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 80px;
+}
+.slide-section .sec-num {
+  font-family: var(--font-display);
+  font-size: var(--type-section);
+  line-height: 0.9;
+  color: var(--b5-blau);
+  letter-spacing: -0.02em;
+}
+.slide-section .sec-body {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.slide-section .sec-title {
+  font-family: var(--font-display);
+  font-size: 112px;
+  line-height: 1.0;
+  color: var(--b5-weiss);
+  max-width: 1200px;
+  margin: -2px 0 0;
+}
+.slide-section .sec-desc {
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: var(--type-body);
+  line-height: 1.5;
+  color: rgba(255,255,255,0.78);
+  max-width: 900px;
+}
+
+/* ============================================================
+   SLIDE 05 — TEXT + IMAGE
+   ============================================================ */
+.slide-split { display: block; }
+.slide-split .split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 100px;
+  align-items: start;
+  margin-top: var(--gap-section);
+}
+.slide-split .split-text {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.slide-split .split-image {
+  width: 100%;
+  height: 480px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--gray-100);
+}
+.slide-split .split-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ============================================================
+   SLIDE 06 — FEATURE GRID (3 cards)
+   ============================================================ */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+  margin-top: var(--gap-section);
+}
+.feature-card {
+  background: var(--b5-weiss);
+  border-radius: var(--radius-md);
+  padding: 48px 44px 44px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 380px;
+  max-height: 480px;
+  position: relative;
+}
+.feature-card .card-num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--b5-blau);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.feature-card .card-divider {
+  width: 56px;
+  height: 4px;
+  background: var(--b5-blau);
+  border-radius: 4px;
+  margin: 4px 0 12px;
+}
+.feature-card .card-tag {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--b5-blau);
+  margin: 0;
+}
+.feature-card h3 {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 1.1;
+  color: var(--b5-blau-dunkel);
+}
+.feature-card p {
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: var(--type-body);
+  line-height: 1.45;
+  color: var(--gray-700);
+}
+
+/* ============================================================
+   SLIDE 07 — BIG STAT
+   ============================================================ */
+.slide-stat { display: block; }
+.slide-stat .stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 100px;
+  align-items: start;
+  margin-top: var(--gap-section);
+}
+.big-number {
+  font-family: var(--font-display);
+  font-size: var(--type-mega);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  color: var(--b5-blau);
+}
+.big-number .unit {
+  font-size: 0.45em;
+  color: var(--b5-blau);
+  margin-left: 0.05em;
+}
+.stat-caption {
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: var(--type-body);
+  line-height: 1.4;
+  color: var(--gray-700);
+  margin: 24px 0 0;
+}
+.stat-side {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 12px;
+}
+
+/* ============================================================
+   SLIDE 08 — QUOTE
+   ============================================================ */
+.reveal .slides > section.slide-quote {
+  display: flex;
+  flex-direction: column;
+}
+.slide-quote .slide-header { flex-shrink: 0; }
+.slide-quote .quote-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+  max-width: 1600px;
+}
+.quote-mark {
+  font-family: var(--font-display);
+  font-size: 160px;
+  line-height: 0.6;
+  color: var(--b5-blau);
+}
+.quote-text {
+  font-family: var(--font-display);
+  font-size: 64px;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--b5-blau-dunkel);
+  max-width: 1600px;
+}
+.quote-attrib {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-family: var(--font-text);
+  margin-top: 16px;
+}
+.quote-attrib .avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--b5-blau);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--b5-weiss);
+  font-family: var(--font-display);
+  font-size: 36px;
+}
+.quote-attrib .who {
+  font-weight: 700;
+  font-size: 32px;
+  color: var(--b5-blau-dunkel);
+  line-height: 1.2;
+}
+.quote-attrib .role {
+  font-weight: 400;
+  font-size: var(--type-small);
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+
+/* ============================================================
+   SLIDE 09 — FULL-BLEED IMAGE with caption card
+   ============================================================ */
+.reveal .slides > section.slide-image {
+  padding: 0;
+  background: var(--b5-blau-dunkel);
+}
+.slide-image .full-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.slide-image > *:not(.full-photo) { z-index: 2; }
+.image-caption-card {
+  position: absolute;
+  left: 100px;
+  bottom: 100px;
+  background: var(--b5-weiss);
+  border-radius: var(--radius-md);
+  padding: 44px 56px;
+  box-shadow: var(--shadow-lg);
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.image-caption-card .cap-title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  line-height: 1.1;
+  color: var(--b5-blau-dunkel);
+}
+.image-caption-card .cap-body {
+  font-family: var(--font-text);
+  font-size: var(--type-body);
+  line-height: 1.4;
+  color: var(--gray-700);
+}
+
+/* ============================================================
+   SLIDE 10 — COMPARISON TABLE
+   ============================================================ */
+.b5-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-text);
+  margin-top: var(--gap-section);
+}
+.b5-table th, .b5-table td {
+  text-align: left;
+  padding: 28px 32px;
+  font-size: 28px;
+  line-height: 1.35;
+  border-bottom: 1px solid var(--gray-200);
+  vertical-align: top;
+}
+.b5-table thead th {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--b5-blau-dunkel);
+  background: var(--gray-50);
+  border-bottom: 3px solid var(--b5-blau);
+}
+.b5-table thead th:first-child {
+  background: transparent;
+  border-bottom: 3px solid var(--gray-200);
+}
+.b5-table tbody th {
+  font-weight: 700;
+  color: var(--b5-blau-dunkel);
+  width: 28%;
+}
+.b5-table td { color: var(--gray-700); font-weight: 500; }
+.b5-table td.highlight {
+  color: var(--b5-blau-dunkel);
+  font-weight: 700;
+  background: rgba(0, 159, 227, 0.06);
+}
+
+/* ============================================================
+   SLIDE 11 — PROCESS / TIMELINE (4 steps)
+   ============================================================ */
+.process {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: var(--gap-section);
+  position: relative;
+}
+.process::before {
+  content: "";
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  top: 50px;
+  height: 4px;
+  background: var(--gray-200);
+  z-index: 0;
+}
+.process-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 24px;
+}
+.process-step .dot {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--b5-blau);
+  color: var(--b5-weiss);
+  font-family: var(--font-display);
+  font-size: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 36px;
+  box-shadow: 0 0 0 12px var(--gray-50);
+}
+.process-step h3 {
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1.1;
+  color: var(--b5-blau-dunkel);
+  margin: 0 0 16px;
+}
+.process-step p {
+  font-family: var(--font-text);
+  font-size: 26px;
+  line-height: 1.45;
+  color: var(--gray-700);
+}
+
+/* ============================================================
+   SLIDE 12 — CHART
+   ============================================================ */
+.chart-wrap {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  column-gap: 80px;
+  align-items: center;
+  margin-top: var(--gap-section);
+}
+.chart-svg {
+  width: 100%;
+  height: auto;
+  font-family: var(--font-text);
+}
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-size: 28px;
+  color: var(--gray-700);
+}
+.chart-legend .row {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+}
+.chart-legend .swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transform: translateY(2px);
+}
+
+/* ============================================================
+   SLIDE 13 — CONTACT (mit magenta Speech-Bubble)
+   ============================================================ */
+.reveal .slides > section.slide-contact {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  column-gap: 80px;
+  align-items: center;
+}
+.contact-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.contact-stack h2 {
+  font-family: var(--font-display);
+  font-size: 64px;
+  line-height: 1.05;
+  color: var(--b5-blau-dunkel);
+  max-width: 880px;
+}
+.contact-details {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  column-gap: 32px;
+  row-gap: 28px;
+  font-family: var(--font-text);
+  font-size: 28px;
+  color: var(--b5-blau-dunkel);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.contact-details .label {
+  font-size: var(--type-small);
+  color: var(--gray-500);
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding-top: 4px;
+}
+
+.speech-bubble {
+  width: 440px;
+  height: 440px;
+  justify-self: end;
+  position: relative;
+  filter: drop-shadow(0 18px 32px rgba(234, 81, 114, 0.32));
+}
+.speech-bubble .bubble-main {
+  position: absolute;
+  top: 1%;
+  right: 1%;
+  width: 84%;
+  height: 84%;
+  background: var(--b5-magenta);
+  border-radius: 50%;
+  box-sizing: border-box;
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--b5-weiss);
+  font-family: var(--font-display);
+  font-size: 38px;
+  line-height: 1.15;
+}
+.speech-bubble .bubble-tail {
+  position: absolute;
+  bottom: 1%;
+  left: 1%;
+  width: 36%;
+  height: 36%;
+  background: var(--b5-magenta);
+  border-radius: 50%;
+}
+
+/* ============================================================
+   TALK 2026-05-27 — Erweiterungen für „Prompts und Agents"
+   Block-Divider (volle Bühne), Statement-Slides, Quellen-
+   Fußnoten, Slide-Nummer-Footer, Inline-Mono für Code/Daten.
+   ============================================================ */
+
+/* Slide-Nummer-Footer für Content-Slides (zurückhaltend,
+   kein Logo, nur Nummer rechts unten). */
+.slide-num {
+  position: absolute;
+  right: var(--pad-x);
+  bottom: 48px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--gray-400);
+  letter-spacing: 0.04em;
+}
+.slide-num--dark { color: rgba(255,255,255,0.45); }
+
+/* Quellen-Fußnote (klein, lesbar, links über der Nummer). */
+.slide-source {
+  position: absolute;
+  left: var(--pad-x);
+  right: 200px;
+  bottom: 48px;
+  font-family: var(--font-text);
+  font-size: 18px;
+  font-style: italic;
+  color: var(--gray-500);
+  line-height: 1.4;
+  max-width: 1400px;
+}
+.slide-source--dark { color: rgba(255,255,255,0.55); }
+.slide-source::before {
+  content: "Quelle: ";
+  font-style: normal;
+  font-weight: 700;
+  color: var(--gray-600);
+  letter-spacing: 0.04em;
+}
+.slide-source--dark::before { color: rgba(255,255,255,0.7); }
+
+/* Inline-Mono für technische Begriffe / Code-Schnipsel im Fließtext.
+   (Nicht zu verwechseln mit code.b5 aus byte5-tokens.css — dieses
+   hier ist subtiler ohne Hintergrund, für inline-Hervorhebung.) */
+.reveal code, code.mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  font-weight: 600;
+  color: var(--b5-blau-dunkel);
+  background: transparent;
+  padding: 0;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   BLOCK-DIVIDER (Slide 4, 7, 9, 13, 19, 24, 29, 35, 37)
+   Stil eng am byte5-Slide-Template-Section-Divider:
+   - dunkle Navy-Fläche
+   - kleines, mono Eyebrow oben ("BLOCK X VON NEUN")
+   - "0X" cyan + Titel weiß, side-by-side baseline-aligned
+   - optional magenta-Doppelpunkt-Lead unter dem Titel
+   Proportionen wie im Template (sec-num 180px, sec-title 112px),
+   nicht überdimensioniert.
+   ============================================================ */
+.reveal .slides > section.slide-block {
+  background: var(--b5-blau-dunkel);
+  color: var(--b5-weiss);
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+}
+.slide-block .block-eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin: 0;
+}
+.slide-block .block-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 80px;
+}
+.slide-block .block-num {
+  font-family: var(--font-display);
+  font-size: 180px;
+  line-height: 0.85;
+  color: var(--b5-blau);
+  letter-spacing: -0.02em;
+}
+.slide-block .block-body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.slide-block .block-title {
+  font-family: var(--font-display);
+  font-size: 112px;
+  line-height: 1.0;
+  letter-spacing: -0.015em;
+  color: var(--b5-weiss);
+  max-width: 1300px;
+  margin: 0;
+}
+.slide-block .block-lead {
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.8);
+  max-width: 1100px;
+  margin: 0;
+}
+.slide-block .block-lead .colon {
+  color: var(--b5-magenta);
+  font-weight: 900;
+}
+
+/* ============================================================
+   STATEMENT-SLIDE (Slide 23, 38, 39)
+   Großes zentrales Statement, viel Whitespace, optional Untertitel.
+   Variante --magenta: magenta Akzent für die Kernpointe.
+   ============================================================ */
+.reveal .slides > section.slide-statement {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  padding: var(--pad-top) 200px var(--pad-bottom);
+}
+.slide-statement .statement-text {
+  font-family: var(--font-display);
+  font-size: 104px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--b5-blau-dunkel);
+  max-width: 1500px;
+  margin: 0;
+}
+.slide-statement .statement-text--small {
+  font-size: 80px;
+}
+.slide-statement .statement-sub {
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.35;
+  color: var(--gray-600);
+  max-width: 1400px;
+  margin: 0;
+}
+.slide-statement.slide-statement--accent .statement-text {
+  color: var(--b5-magenta);
+}
+.slide-statement.slide-statement--dark {
+  background: var(--b5-blau-dunkel);
+  color: var(--b5-weiss);
+}
+.slide-statement.slide-statement--dark .statement-text { color: var(--b5-weiss); }
+.slide-statement.slide-statement--dark .statement-sub {
+  color: rgba(255,255,255,0.7);
+}
+
+/* ============================================================
+   ROADMAP (Slide 3 — 9 Blöcke kompakt)
+   Vertikal stack, kompakter als .agenda-list, für die ganze Übersicht.
+   ============================================================ */
+/* Höhere Spezifität (.reveal .roadmap), damit der reveal-ol-Reset
+   (display: block) nicht das Grid platt drückt.
+   grid-auto-flow: column + explizite Row-Anzahl → 1,2,3 stapeln in
+   Spalte 1, 4,5,6 in Spalte 2, 7,8,9 in Spalte 3 (vertikale Lese-
+   reihenfolge wie vom User gewünscht). */
+.reveal .roadmap {
+  list-style: none;
+  padding: 0;
+  margin: var(--gap-section) 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, auto);
+  grid-auto-flow: column;
+  column-gap: 60px;
+  row-gap: 28px;
+  max-width: 1680px;
+}
+.reveal .roadmap li {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  align-items: baseline;
+  column-gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--gray-200);
+}
+.reveal .roadmap .num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--b5-blau);
+  line-height: 1;
+}
+.reveal .roadmap .item-title {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--b5-blau-dunkel);
+  line-height: 1.25;
+}
+
+/* ============================================================
+   PROGRESSIVE REVEAL — Fragment-Styling
+   Reveal.js setzt .visible auf sichtbare Fragmente. Wir overriden
+   die Default-Animation auf einen sanften Fade.
+   ============================================================ */
+.reveal .fragment {
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.reveal .fragment.visible {
+  opacity: 1;
+}
+
+/* Slide-5-Pointe: groß, zentriert, übernimmt die Bühne.
+   Absolute positioniert, überlagert die (dann gedimmte) Eliza-
+   Content-Fläche statt darunter angehängt zu werden. */
+.slide-eliza .pointe-wrap {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  top: 50%;
+  transform: translateY(-40%);
+  z-index: 5;
+  max-width: 1600px;
+}
+.slide-eliza .pointe-eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--b5-blau);
+  margin: 0 0 20px;
+}
+.slide-eliza .pointe-plain {
+  font-family: var(--font-display);
+  font-size: 72px;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--b5-blau-dunkel);
+  margin: 0;
+  text-align: left;
+}
+
+/* Slide-36-Treppe: Take-aways stapeln sich nach unten,
+   vorherige werden gedimmt (nicht ausgeblendet, Treppe). */
+.slide-takeaways {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 36px;
+}
+.slide-takeaways .slide-header {
+  margin-bottom: 12px;
+}
+.slide-takeaways .takeaway {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--b5-blau-dunkel);
+  max-width: 1500px;
+  margin: 0;
+  padding-left: 32px;
+  border-left: 6px solid var(--b5-magenta);
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+/* Vorherige Take-aways dimmen, sobald ein neuer Fragment sichtbar wird.
+   Wir markieren das im DOM via fragment-Index. Reveal.js bietet leider
+   keinen direkten "I am no longer the latest visible"-Hook — wir nutzen
+   die Approach: alle visible-Fragmente werden initial voll, das letzte
+   bleibt voll; CSS via .reveal[data-fragment]-Hook ist umständlich,
+   darum nutzen wir JS in index.html (Reveal.on('fragmentshown')). */
+.slide-takeaways .takeaway.dimmed { opacity: 0.35; }
+
+/* ============================================================
+   TALK-SPEZIFISCHE LAYOUT-HELFER
+   ============================================================ */
+
+/* Zweispaltige Karten-Vergleiche (Slide 4 Zwei Lager, Slide 24
+   Workflow-vs-Agent, Slide 25 Generic-vs-Specialized, etc.) */
+.compare-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 60px;
+  margin-top: var(--gap-section);
+  max-width: 1680px;
+}
+.compare-card {
+  background: var(--b5-weiss);
+  border-radius: var(--radius-md);
+  padding: 48px 44px;
+  box-shadow: var(--shadow-sm);
+  border-top: 5px solid var(--gray-400);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.compare-card.compare-card--accent { border-top-color: var(--b5-blau); }
+.compare-card.compare-card--warn   { border-top-color: var(--b5-magenta); }
+.compare-card.compare-card--muted  { border-top-color: var(--gray-400); }
+.compare-card .eyebrow { margin-bottom: 4px; }
+.compare-card h3 {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1.1;
+  color: var(--b5-blau-dunkel);
+  margin: 0 0 8px;
+}
+.compare-card p {
+  font-family: var(--font-text);
+  font-size: 26px;
+  line-height: 1.45;
+  color: var(--gray-700);
+  margin: 0;
+}
+.compare-card .point {
+  margin-top: 14px;
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--gray-700);
+}
+.compare-card .point strong {
+  color: var(--b5-blau-dunkel);
+  font-weight: 700;
+}
+.compare-card .verdict {
+  margin-top: 10px;
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--gray-700);
+}
+.compare-card .verdict strong {
+  color: var(--b5-magenta);
+  font-weight: 700;
+}
+.compare-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.compare-card ul li {
+  font-size: 26px;
+  line-height: 1.4;
+  color: var(--gray-700);
+  padding-left: 28px;
+  position: relative;
+}
+.compare-card ul li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--b5-blau);
+  font-weight: 700;
+}
+.compare-card.compare-card--warn ul li::before { content: "✕"; color: var(--b5-magenta); }
+
+/* Drei-Reasons-Treppe (Slide 21 "Warum natürlich reden") */
+.reason-stairs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: var(--gap-section);
+  max-width: 1500px;
+  counter-reset: reason;
+}
+.reason-stairs .reason {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  align-items: start;
+  column-gap: 28px;
+  padding: 20px 0;
+  border-top: 2px solid var(--gray-200);
+  counter-increment: reason;
+}
+.reason-stairs .reason:first-child { border-top: none; padding-top: 0; }
+.reason-stairs .reason::before {
+  content: counter(reason);
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+  color: var(--b5-blau);
+}
+.reason-stairs .reason .reason-head {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--b5-blau-dunkel);
+  margin: 0 0 8px;
+  line-height: 1.1;
+}
+.reason-stairs .reason .reason-body {
+  font-family: var(--font-text);
+  font-size: 24px;
+  color: var(--gray-700);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Context-Window-Visualisierung (Slide 10).
+   Zeigt das harte Token-Limit als gerahmte Box. Die Segmente sind
+   ungefähr proportional zu typischen Werten (System-Prompt ~14 % von
+   200 K, Memory + Verlauf klein, Rest frei). Pattern-Fill auf .free
+   macht den freien Bereich visuell als „leer/zur Verfügung" lesbar. */
+.ctx-window {
+  border: 3px solid var(--b5-blau-dunkel);
+  border-radius: var(--radius-md);
+  padding: 14px 18px 16px;
+  background: var(--gray-50);
+  max-width: 540px;
+}
+.ctx-window-head {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--b5-blau-dunkel);
+  margin: 0 0 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.ctx-window-head .max {
+  color: var(--b5-magenta);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.ctx-bar {
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+  background: var(--b5-weiss);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.ctx-seg {
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.ctx-seg:last-child { border-bottom: none; }
+.ctx-seg .name { font-weight: 700; }
+.ctx-seg .sz { color: var(--gray-500); font-size: 12px; font-weight: 400; }
+.ctx-seg.sys {
+  background: var(--b5-blau);
+  color: var(--b5-weiss);
+  flex-basis: 28%;
+}
+.ctx-seg.sys .sz { color: rgba(255,255,255,0.85); }
+.ctx-seg.mem {
+  background: var(--gray-200);
+  color: var(--b5-blau-dunkel);
+  flex-basis: 8%;
+  min-height: 30px;
+}
+.ctx-seg.hist {
+  background: rgba(0,159,227,0.18);
+  color: var(--b5-blau-dunkel);
+  flex-basis: 12%;
+  min-height: 30px;
+}
+.ctx-seg.free {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--gray-50) 0,
+    var(--gray-50) 7px,
+    var(--gray-100) 7px,
+    var(--gray-100) 14px
+  );
+  color: var(--gray-600);
+  flex: 1;
+  justify-content: center;
+  font-style: italic;
+}
+.ctx-window-foot {
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--b5-magenta);
+  font-weight: 700;
+  margin: 12px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ctx-window-foot::before { content: "⚠"; font-size: 16px; }
+
+/* Code-Vergleich (Slide 11 Struktur die wirkt).
+   Klein gehalten + align-items: start, damit jede Box nur so hoch wird
+   wie ihr Inhalt — sonst „sitzt" der linke Text optisch zu tief, weil
+   die Box auf die Höhe der rechten gestretcht würde. */
+.code-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  column-gap: 36px;
+  margin-top: 12px;
+  max-width: 1680px;
+}
+.code-compare .code-block {
+  background: var(--b5-blau-dunkel);
+  border-radius: var(--radius-md);
+  padding: 32px 36px 220px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.92);
+  white-space: pre-wrap;
+}
+.code-compare .code-block .code-label {
+  display: block;
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.code-compare .code-block--bad .code-label { color: var(--b5-magenta); }
+.code-compare .code-block--good .code-label { color: var(--b5-blau); }
+.code-compare .code-block .tag { color: var(--b5-blau); }
+.code-compare .code-block--bad .tag { color: rgba(255,255,255,0.5); }
+
+/* Schema-Box: einfaches Diagramm-Konstrukt (Stateless-Schema,
+   Schaltkreis-Schema, etc.) */
+.schema {
+  background: var(--b5-weiss);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 36px 44px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  line-height: 1.6;
+  color: var(--b5-blau-dunkel);
+  margin-top: 28px;
+  max-width: 1100px;
+}
+.schema .arrow {
+  color: var(--b5-blau);
+  font-weight: 700;
+  margin: 0 12px;
+}
+.schema .accent { color: var(--b5-magenta); font-weight: 700; }
+.schema .muted { color: var(--gray-500); }
+
+/* Memory-Flow-Diagramm (Slide 17). Drei klar abgegrenzte Stationen
+   (Files → Context → Modell) verbunden durch beschriftete Pfeile, statt
+   einer Wolke aus Inline-Tokens. */
+.memory-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  max-width: 540px;
+  font-family: var(--font-text);
+  color: var(--b5-blau-dunkel);
+}
+.memory-flow .mf-station {
+  background: var(--b5-weiss);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  box-shadow: var(--shadow-sm);
+}
+.memory-flow .mf-station.client {
+  border-left: 4px solid var(--b5-blau);
+}
+.memory-flow .mf-station.server {
+  background: var(--b5-blau-dunkel);
+  color: var(--b5-weiss);
+  border-color: var(--b5-blau-dunkel);
+}
+.memory-flow .mf-eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--b5-blau);
+  margin-bottom: 10px;
+}
+.memory-flow .mf-station.server .mf-eyebrow { color: rgba(255,255,255,0.7); }
+.memory-flow .mf-files {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.memory-flow .mf-pill {
+  background: var(--gray-100);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--b5-blau-dunkel);
+  font-weight: 600;
+}
+.memory-flow .mf-arrow {
+  text-align: center;
+  font-family: var(--font-text);
+  font-size: 18px;
+  color: var(--gray-600);
+  font-weight: 600;
+  position: relative;
+  padding: 4px 0;
+}
+.memory-flow .mf-arrow::before {
+  content: "↓";
+  display: block;
+  color: var(--b5-blau);
+  font-size: 26px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.memory-flow .mf-station .mf-line {
+  font-size: 18px;
+  line-height: 1.4;
+}
+.memory-flow .mf-station.server .mf-line { color: rgba(255,255,255,0.92); }
+.memory-flow .mf-footnote {
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-style: italic;
+  color: var(--gray-500);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* Iframe-Slot für interaktive Slides (Slide 14 + 16).
+   Höhe so gewählt, dass mit kompaktem Header + reduziertem pad-bottom
+   noch ~50px Luft zur Bühnen-Unterkante bleiben. */
+.iframe-slot {
+  margin-top: 36px;
+  width: 100%;
+  max-width: 1680px;
+  height: 640px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--b5-weiss);
+}
+.iframe-slot iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Pull-Quote-Box (für Anthropic-Zitat in Slide 13 Session, etc.) */
+.pull-quote {
+  border-left: 6px solid var(--b5-blau);
+  background: var(--b5-weiss);
+  padding: 28px 36px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 26px;
+  line-height: 1.5;
+  color: var(--b5-blau-dunkel);
+  max-width: 1500px;
+  margin-top: 32px;
+  box-shadow: var(--shadow-sm);
+}
+.pull-quote .pq-attrib {
+  display: block;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--gray-500);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 16px;
+}
+
+/* Three-Sentences-Karten (Slide 7) — drei nummerierte Karten nebeneinander */
+.three-sentences {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+  max-width: 1680px;
+}
+.ts-card {
+  background: var(--b5-weiss);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 36px 36px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 6px solid var(--b5-blau);
+}
+.ts-num {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+  color: var(--b5-blau);
+  letter-spacing: -0.02em;
+}
+.ts-head {
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1.1;
+  color: var(--b5-blau-dunkel);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.ts-body {
+  font-family: var(--font-text);
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--gray-700);
+  margin: 0;
+}
+.ts-body code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--gray-100);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--b5-blau-dunkel);
+}
+
+/* Mini-QR + Link-Card (Slide 7 + 40) */
+.link-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--b5-weiss);
+  border: 2px solid var(--b5-blau);
+  border-radius: var(--radius-md);
+  padding: 20px 28px;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--b5-blau-dunkel);
+  margin-top: 28px;
+  box-shadow: var(--shadow-sm);
+}
+.link-card .arrow { color: var(--b5-blau); font-weight: 700; }
+.link-card .url { font-weight: 700; }
+.link-card .label {
+  font-family: var(--font-text);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-right: 8px;
+}
+
+/* AIME vs Strawberry Split (Slide 29) */
+.split-versus {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 60px;
+  margin-top: var(--gap-section);
+  max-width: 1680px;
+}
+.versus-card {
+  background: var(--b5-weiss);
+  border-radius: var(--radius-md);
+  padding: 56px 48px;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.versus-card .vcard-icon {
+  font-size: 120px;
+  line-height: 1;
+  font-family: var(--font-display);
+}
+.versus-card.vcard--ok .vcard-icon { color: var(--b5-blau); }
+.versus-card.vcard--fail .vcard-icon { color: var(--b5-magenta); }
+.versus-card .vcard-head {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 1.1;
+  color: var(--b5-blau-dunkel);
+  margin: 0;
+}
+.versus-card .vcard-body {
+  font-family: var(--font-text);
+  font-size: 24px;
+  color: var(--gray-600);
+  margin: 0;
+  line-height: 1.4;
+}
+.versus-card .vcard-result {
+  font-family: var(--font-display);
+  font-size: 72px;
+  color: var(--b5-blau-dunkel);
+  margin: 0;
+}
+
+/* Anti-Pattern-Karten (Slide 27) */
+.antipattern-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 60px;
+  margin-top: var(--gap-section);
+  max-width: 1680px;
+}
+.antipattern-card {
+  background: var(--b5-weiss);
+  border-radius: var(--radius-md);
+  padding: 40px 44px;
+  box-shadow: var(--shadow-sm);
+  border-left: 6px solid var(--b5-magenta);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.antipattern-card .ap-tag {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--b5-magenta);
+}
+.antipattern-card .ap-head {
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1.1;
+  color: var(--b5-blau-dunkel);
+  margin: 0;
+}
+.antipattern-card .ap-body {
+  font-family: var(--font-text);
+  font-size: 24px;
+  line-height: 1.5;
+  color: var(--gray-700);
+  margin: 0;
+}
+
+/* ============================================================
+   Tweet-Card (Slide 23) — X-Stil-Rebuild des Original-Posts.
+   Verified-Badge + Action-Icons inline als SVG. Keine X-Logos.
+   Avatar als generisches Platzhalter-Foto (User-Wunsch: kein echtes
+   Profilbild eingebunden).
+   ============================================================ */
+.tweet-card {
+  background: var(--b5-weiss);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 22px 28px 18px;
+  box-shadow: var(--shadow-md);
+  max-width: 1100px;
+  font-family: var(--font-text);
+  color: var(--b5-blau-dunkel);
+  margin: 0;
+  text-align: left;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  column-gap: 14px;
+  row-gap: 10px;
+}
+.tweet-card .tweet-avatar {
+  grid-row: 1 / 3;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 38%, #d8c3b4 0 30%, transparent 31%),
+    linear-gradient(180deg, var(--gray-300) 0%, var(--gray-400) 100%);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.tweet-card .tweet-avatar::after {
+  /* Schultern-Andeutung für Profilfoto-Silhouette */
+  content: "";
+  position: absolute;
+  left: 50%; bottom: -10%;
+  width: 110%;
+  height: 60%;
+  background: #b0a092;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+.tweet-card .tweet-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  font-size: 18px;
+  line-height: 1.2;
+}
+.tweet-card .tweet-name {
+  font-weight: 700;
+  color: var(--gray-900);
+  font-size: 19px;
+}
+.tweet-card .tweet-verified {
+  width: 19px;
+  height: 19px;
+  vertical-align: middle;
+}
+.tweet-card .tweet-handle,
+.tweet-card .tweet-date,
+.tweet-card .tweet-sep {
+  color: var(--gray-500);
+  font-weight: 400;
+  font-size: 18px;
+}
+.tweet-card .tweet-body {
+  grid-column: 2;
+  font-family: var(--font-text);
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--gray-900);
+  margin: 0;
+  font-weight: 400;
+}
+.tweet-card .tweet-actions {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 4px;
+  color: var(--gray-500);
+  font-size: 16px;
+}
+.tweet-card .tweet-actions .act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 56px;
+  font-variant-numeric: tabular-nums;
+}
+.tweet-card .tweet-actions .act:last-child { margin-right: 0; }
+.tweet-card .tweet-actions svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--gray-500);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Statement-Slide mit Tweet — Layout: Statement oben, Tweet direkt
+   darunter. Vorher space-between → Tweet klebte unten an der Bühne. */
+.reveal .slides > section.slide-statement.slide-statement--with-tweet {
+  /* !important nötig, weil reveal.js display: block als Inline-Style
+     auf die aktuelle Slide setzt — Inline schlägt jeden Selektor. */
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 120px;
+  padding-bottom: 80px;
+  gap: 56px;
+}
+.slide-statement--with-tweet .statement-block {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1500px;
+}
+.slide-statement--with-tweet .statement-text {
+  font-size: 80px;
+  margin: 0;
+  line-height: 1.05;
+}
+.slide-statement--with-tweet .statement-sub {
+  font-size: 30px;
+  margin: 0;
+}
+
+/* Vorsorge/Nachsorge-Matrix-Tabelle */
+.matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 40px;
+  margin-top: var(--gap-section);
+  max-width: 1680px;
+}
+.matrix-col {
+  background: var(--b5-weiss);
+  border-radius: var(--radius-md);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-sm);
+}
+.matrix-col h3 {
+  font-family: var(--font-display);
+  font-size: 44px;
+  color: var(--b5-blau-dunkel);
+  margin: 0 0 20px;
+}
+.matrix-col h3 .pref {
+  color: var(--b5-blau);
+  font-weight: 400;
+  margin-right: 12px;
+}
+.matrix-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.matrix-col ul li {
+  position: relative;
+  padding-left: 36px;
+  font-size: 24px;
+  line-height: 1.4;
+  color: var(--gray-700);
+}
+.matrix-col ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.25em;
+  width: 22px;
+  height: 22px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23009FE3' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='4,12 10,18 20,6'/></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Headline mit Reveal-Pointe (Slide 33 Vermenschlichung) — wie
+   Eliza-Pointe: lange Headline + großer fragment-Reveal. */
+.slide-anthro .pointe {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  top: 50%;
+  transform: translateY(-15%);
+  z-index: 5;
+  font-family: var(--font-display);
+  font-size: 132px;
+  line-height: 1.0;
+  color: var(--b5-magenta);
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-align: left;
+  max-width: 1500px;
+}
+.slide-anthro .anthro-head {
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.slide-anthro .anthro-head.dimmed-out { opacity: 0.15; }
+.slide-anthro .consequences {
+  margin-top: var(--gap-section);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1400px;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.slide-anthro .consequences.dimmed-out { opacity: 0; }
+
+/* ============================================================
+   PDF-Druck-Mode (reveal.js setzt body.print-pdf)
+   ============================================================ */
+@media print {
+  html, body { background: var(--b5-weiss); }
+}

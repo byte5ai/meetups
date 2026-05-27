@@ -1,0 +1,16 @@
+{
+  "name": "byte5-deck-prompts-and-agents",
+  "version": "0.1.0",
+  "private": true,
+  "description": "byte5 Meetup-Deck: Prompts und Agents (2026-05-27). reveal.js + byte5 Designsystem.",
+  "scripts": {
+    "dev": "http-server . -p 3010 -a 0.0.0.0 -c-1 --silent",
+    "build": "mkdir -p dist && cp -R index.html assets css fonts js node_modules/reveal.js/dist node_modules/reveal.js/plugin dist/"
+  },
+  "dependencies": {
+    "reveal.js": "^5.2.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

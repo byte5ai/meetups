@@ -5,8 +5,8 @@
   "description": "Marp Slide Deck Boilerplate mit byte5-Theme, Copy-to-Clipboard auf Code-Bloecken und GitHub-Pages-Auto-Deployment.",
   "scripts": {
     "dev": "marp -s --engine ./slides/marp-engine.js --html --allow-local-files slides/",
-    "build": "marp --html --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css slides/deck.md --output dist/index.html && marp --html --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css slides/spec-kit-demo.md --output dist/spec-kit-demo.html && cp -R slides/assets dist/assets",
-    "pdf": "marp --pdf --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css slides/deck.md --output dist/deck.pdf && marp --pdf --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css slides/spec-kit-demo.md --output dist/spec-kit-demo.pdf",
+    "build": "marp slides/deck.md --html --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css --output dist/index.html && marp slides/spec-kit-demo.md --html --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css --output dist/spec-kit-demo.html && cp -R slides/assets dist/assets",
+    "pdf": "marp slides/deck.md --pdf --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css --output dist/deck.pdf && marp slides/spec-kit-demo.md --pdf --allow-local-files --engine ./slides/marp-engine.js --theme-set slides/theme.css --output dist/spec-kit-demo.pdf",
     "clean": "rm -rf dist"
   },
   "devDependencies": {

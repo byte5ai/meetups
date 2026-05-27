@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stateless-Animation</title>
+  <link rel="stylesheet" href="../css/byte5-tokens.css" />
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: var(--font-text);
+      background: var(--b5-weiss);
+      color: var(--b5-blau-dunkel);
+      display: grid;
+      grid-template-rows: 1fr auto;
+      box-sizing: border-box;
+    }
+
+    /* Bühne */
+    .stage {
+      position: relative;
+      overflow: hidden;
+      background: var(--gray-50);
+    }
+
+    /* Caption oben links */
+    .caption {
+      position: absolute;
+      top: 18px;
+      left: 22px;
+      right: 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--font-text);
+      font-size: 16px;
+      color: var(--b5-blau-dunkel);
+      z-index: 10;
+    }
+    .caption .step-num {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      background: var(--b5-blau);
+      color: var(--b5-weiss);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+    }
+    .caption .text {
+      font-weight: 600;
+    }
+
+    /* --- PHASE 1: Datacenter weitwinkel --- */
+    .scene { position: absolute; inset: 0; opacity: 0; transition: opacity var(--dur-slow) var(--ease-out); pointer-events: none; }
+    .scene.active { opacity: 1; }
+
+    /* Server in der Mitte */
+    .server {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px;
+      height: 200px;
+      background: var(--b5-blau-dunkel);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--b5-weiss);
+      box-shadow: var(--shadow-md);
+      transition: box-shadow var(--dur-base) var(--ease-out);
+    }
+    .server.flash { box-shadow: 0 0 0 16px rgba(0,159,227,0.25), var(--shadow-md); }
+    .server.forget { opacity: 0.45; }
+    .server .lbl {
+      font-family: var(--font-display);
+      font-size: 18px;
+    }
+    .server .sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      opacity: 0.7;
+      letter-spacing: 0.06em;
+    }
+    .server .indicator {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--b5-magenta);
+      margin-top: 4px;
+    }
+
+    /* Clients verteilt */
+    .client {
+      position: absolute;
+      width: 110px;
+      height: 80px;
+      background: var(--b5-weiss);
+      border: 2px solid var(--gray-300);
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: var(--shadow-xs);
+      font-size: 13px;
+      color: var(--b5-blau-dunkel);
+    }
+    .client.c1 { top: 14%; left: 8%; }
+    .client.c2 { top: 60%; left: 4%; }
+    .client.c3 { top: 8%; right: 8%; }
+    .client.c4 { top: 64%; right: 6%; }
+
+    .client .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--b5-blau);
+    }
+    .client.c2 .dot { background: var(--b5-magenta); }
+    .client.c3 .dot { background: #2FB3A0; }
+    .client.c4 .dot { background: #6B4E9B; }
+    .client .name { font-family: var(--font-mono); font-size: 11px; }
+
+    /* Packets — animierte Kreise, die zwischen Client und Server reisen */
+    .pkt {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--b5-blau);
+      box-shadow: 0 0 0 4px rgba(0,159,227,0.2);
+      opacity: 0;
+      transition: opacity var(--dur-base) var(--ease-out),
+                  transform 1.2s cubic-bezier(0.45, 0, 0.55, 1);
+      transform: translate(0,0);
+    }
+    .pkt.visible { opacity: 1; }
+    .pkt.p1 { background: var(--b5-blau); }
+    .pkt.p2 { background: var(--b5-magenta); }
+    .pkt.p3 { background: #2FB3A0; }
+    .pkt.p4 { background: #6B4E9B; }
+
+    /* Forget-Indikator */
+    .forget-label {
+      position: absolute;
+      left: 50%;
+      top: 76%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--b5-magenta);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transition: opacity var(--dur-slow) var(--ease-out);
+    }
+    .forget-label.visible { opacity: 1; }
+
+    /* --- PHASE 2: Zoom auf eine Session --- */
+    /* Container-Stack, der sich aufbaut */
+    .session-area {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+      gap: 20px;
+      padding: 60px 30px 20px;
+      box-sizing: border-box;
+    }
+    .session-area .col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .session-area .col-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--gray-500);
+    }
+    .session-area .col-client .client-box {
+      width: 130px;
+      height: 90px;
+      background: var(--b5-weiss);
+      border: 2px solid var(--gray-300);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    .session-area .col-client .client-box .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--b5-blau);
+    }
+
+    /* Container — wächst von oben mit jedem Schritt */
+    .container-box {
+      width: 100%;
+      max-width: 240px;
+      background: var(--b5-weiss);
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 6px;
+      transition: box-shadow var(--dur-base) var(--ease-out);
+    }
+    .container-box.flying {
+      box-shadow: 0 0 0 6px rgba(0,159,227,0.15), var(--shadow-md);
+    }
+    .container-box .layer {
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--b5-blau-dunkel);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+    }
+    .container-box .layer.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .container-box .layer .lbl { font-weight: 700; }
+    .container-box .layer .sz { color: var(--gray-500); font-size: 10px; font-weight: 400; }
+    .layer.sys { background: var(--b5-blau); color: var(--b5-weiss); padding: 10px; font-size: 12px; }
+    .layer.sys .sz { color: rgba(255,255,255,0.85); }
+    .layer.mem { background: var(--gray-100); border-left: 3px solid var(--b5-blau); }
+    .layer.turn { background: var(--gray-50); border-left: 3px solid var(--gray-400); }
+    .layer.new { background: var(--b5-magenta); color: var(--b5-weiss); animation: pulse 0.6s ease-out; }
+    .layer.new .sz { color: rgba(255,255,255,0.85); }
+
+    @keyframes pulse {
+      0% { transform: scale(0.96); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    .col-server .server-box {
+      width: 150px;
+      height: 170px;
+      background: var(--b5-blau-dunkel);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--b5-weiss);
+      box-shadow: var(--shadow-md);
+      transition: box-shadow var(--dur-base) var(--ease-out);
+    }
+    .col-server .server-box.flash {
+      box-shadow: 0 0 0 12px rgba(0,159,227,0.25), var(--shadow-md);
+    }
+    .col-server .server-box .lbl { font-family: var(--font-display); font-size: 16px; }
+    .col-server .server-box .sub { font-family: var(--font-mono); font-size: 10px; opacity: 0.7; }
+    .col-server .forget-stamp {
+      margin-top: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--b5-magenta);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transition: opacity var(--dur-base) var(--ease-out);
+    }
+    .col-server .forget-stamp.visible { opacity: 1; }
+
+    /* Steuerleiste */
+    .controls {
+      background: var(--b5-blau-dunkel);
+      color: var(--b5-weiss);
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .controls .step-info {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      opacity: 0.8;
+      margin-right: auto;
+    }
+    .controls .step-info strong { font-weight: 700; color: var(--b5-blau); }
+    .controls button {
+      font-family: var(--font-text);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 18px;
+      border-radius: var(--radius-pill);
+      border: 2px solid var(--b5-blau);
+      background: var(--b5-blau);
+      color: var(--b5-weiss);
+      cursor: pointer;
+      transition: background var(--dur-fast) var(--ease-out);
+    }
+    .controls button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .controls button.ghost {
+      background: transparent;
+      color: var(--b5-weiss);
+      border-color: rgba(255,255,255,0.3);
+    }
+    .controls button.ghost:hover { background: rgba(255,255,255,0.1); }
+    .controls button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="caption">
+      <span class="step-num" id="step-tag">PHASE 1 · 1/9</span>
+      <span class="text" id="step-text">Mehrere Sessions, ein Server. Alles parallel, nichts gespeichert.</span>
+    </div>
+
+    <!-- PHASE 1: Datacenter weitwinkel -->
+    <div class="scene active" id="scene-1">
+      <div class="server" id="server"><span class="lbl">API</span><span class="sub">stateless</span><span class="indicator" style="visibility:hidden" id="server-indicator"></span></div>
+      <div class="client c1"><div class="dot"></div><div class="name">session A</div></div>
+      <div class="client c2"><div class="dot"></div><div class="name">session B</div></div>
+      <div class="client c3"><div class="dot"></div><div class="name">session C</div></div>
+      <div class="client c4"><div class="dot"></div><div class="name">session D</div></div>
+
+      <!-- 4 Packets, je 1 pro Client -->
+      <div class="pkt p1" id="pkt1"></div>
+      <div class="pkt p2" id="pkt2"></div>
+      <div class="pkt p3" id="pkt3"></div>
+      <div class="pkt p4" id="pkt4"></div>
+
+      <div class="forget-label" id="forget-label">⚡ Server vergisst alles nach der Antwort</div>
+    </div>
+
+    <!-- PHASE 2: Zoom auf eine Session -->
+    <div class="scene" id="scene-2">
+      <div class="session-area">
+        <div class="col col-client">
+          <span class="col-label">Client</span>
+          <div class="client-box"><div class="dot"></div><span>session A</span></div>
+        </div>
+        <div class="col">
+          <span class="col-label">Container, der rausgeht</span>
+          <div class="container-box" id="container">
+            <!-- Reihenfolge im DOM ist von OBEN nach UNTEN (column-reverse → unten = neueste, oben = System).
+                 Visuell wollen wir System UNTEN, neue Message OBEN → column-reverse erledigt das. -->
+            <div class="layer sys" data-step="2"><span class="lbl">System-Prompt</span><span class="sz">~24 000 tok</span></div>
+            <div class="layer mem" data-step="3"><span class="lbl">Memory / Files</span><span class="sz">variabel</span></div>
+            <div class="layer turn" data-step="4"><span class="lbl">Turn 1, User</span><span class="sz">~80 tok</span></div>
+            <div class="layer turn" data-step="4"><span class="lbl">Turn 1, Assistant</span><span class="sz">~120 tok</span></div>
+            <div class="layer turn" data-step="5"><span class="lbl">Turn 2, User</span><span class="sz">~95 tok</span></div>
+            <div class="layer turn" data-step="5"><span class="lbl">Turn 2, Assistant</span><span class="sz">~140 tok</span></div>
+            <div class="layer new" data-step="6"><span class="lbl">NEU: User-Message</span><span class="sz">~60 tok</span></div>
+          </div>
+        </div>
+        <div class="col col-server">
+          <span class="col-label">Server</span>
+          <div class="server-box" id="server2"><span class="lbl">API</span><span class="sub">stateless</span></div>
+          <div class="forget-stamp" id="forget-stamp">⚡ vergisst</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <span class="step-info">Schritt <strong id="cur">1</strong> / <span id="total">9</span> · manuell · kein Auto-Play</span>
+    <button id="prev" class="ghost">← Zurück</button>
+    <button id="next">Weiter →</button>
+    <button id="reset" class="ghost">Reset</button>
+  </div>
+
+  <script>
+  (function () {
+    /*
+       9 Schritte total:
+       Phase 1 (Weitwinkel):
+         1: Idle Datacenter
+         2: Packets fliegen Clients → Server
+         3: Server processed (flash)
+         4: Packets fliegen Server → Clients (Antworten zurück), Server forget-label
+       Phase 2 (Zoom auf Session A):
+         5: System-Prompt-Layer sichtbar
+         6: + Memory
+         7: + Turn 1 + Turn 2 (Verlauf)
+         8: + NEUE User-Message
+         9: Container "fliegt zum Server", flash, kommt zurück, forget
+    */
+
+    const TOTAL = 9;
+    let cur = 1;
+
+    const stepTag = document.getElementById('step-tag');
+    const stepText = document.getElementById('step-text');
+    const curSpan = document.getElementById('cur');
+    document.getElementById('total').textContent = TOTAL;
+
+    const scene1 = document.getElementById('scene-1');
+    const scene2 = document.getElementById('scene-2');
+    const server = document.getElementById('server');
+    const forgetLabel = document.getElementById('forget-label');
+    const pkts = [1,2,3,4].map(i => document.getElementById('pkt'+i));
+    const server2 = document.getElementById('server2');
+    const forgetStamp = document.getElementById('forget-stamp');
+    const layers = [...document.querySelectorAll('#container .layer')];
+    const container = document.getElementById('container');
+
+    function setPkts(state) {
+      // state: 'hidden' | 'to-server' | 'from-server'
+      const stageRect = document.getElementById('stage').getBoundingClientRect();
+      const srvRect = server.getBoundingClientRect();
+      const srvCx = srvRect.left + srvRect.width/2 - stageRect.left;
+      const srvCy = srvRect.top + srvRect.height/2 - stageRect.top;
+
+      const clientPositions = [
+        {x: 0.14 * stageRect.width, y: 0.20 * stageRect.height},
+        {x: 0.10 * stageRect.width, y: 0.68 * stageRect.height},
+        {x: 0.88 * stageRect.width, y: 0.14 * stageRect.height},
+        {x: 0.88 * stageRect.width, y: 0.72 * stageRect.height},
+      ];
+
+      // Leicht zeitversetzte Stagger-Delays — macht die „Schlange am Server" visuell klar.
+      const staggers = [0, 220, 480, 760];
+
+      pkts.forEach((el, idx) => {
+        const start = clientPositions[idx];
+        const delay = staggers[idx];
+        // Setze Startposition (am Client)
+        el.style.left = (start.x - 8) + 'px';
+        el.style.top  = (start.y - 8) + 'px';
+        el.style.transition = `opacity 200ms ${delay}ms, transform 1.2s cubic-bezier(0.45, 0, 0.55, 1) ${delay}ms`;
+        if (state === 'hidden') {
+          el.classList.remove('visible');
+          el.style.transform = 'translate(0,0)';
+        } else if (state === 'to-server') {
+          el.classList.add('visible');
+          // Verschiebe von Client zu Server
+          el.style.transform = `translate(${srvCx - start.x}px, ${srvCy - start.y}px)`;
+        } else if (state === 'from-server') {
+          // Springe sofort zum Server, dann animier zurück
+          el.style.transition = 'none';
+          el.style.transform = `translate(${srvCx - start.x}px, ${srvCy - start.y}px)`;
+          el.classList.add('visible');
+          // Force reflow
+          el.offsetHeight;
+          el.style.transition = `opacity 200ms ${delay}ms, transform 1.2s cubic-bezier(0.45, 0, 0.55, 1) ${delay}ms`;
+          requestAnimationFrame(() => {
+            el.style.transform = 'translate(0,0)';
+          });
+        }
+      });
+    }
+
+    function render() {
+      curSpan.textContent = cur;
+
+      // Phasen-Switch
+      const phase = cur <= 4 ? 1 : 2;
+      scene1.classList.toggle('active', phase === 1);
+      scene2.classList.toggle('active', phase === 2);
+
+      // Reset transient states
+      server.classList.remove('flash', 'forget');
+      forgetLabel.classList.remove('visible');
+      server2.classList.remove('flash');
+      forgetStamp.classList.remove('visible');
+      container.classList.remove('flying');
+      layers.forEach(l => l.classList.remove('visible'));
+
+      let tag = '', text = '';
+
+      if (cur === 1) {
+        tag = 'PHASE 1 · 1/9';
+        text = 'Mehrere Sessions, ein Server. Alles parallel, nichts gespeichert.';
+        setPkts('hidden');
+      } else if (cur === 2) {
+        tag = 'PHASE 1 · 2/9';
+        text = 'Alle Clients schicken den kompletten Verlauf zum Server.';
+        setPkts('to-server');
+      } else if (cur === 3) {
+        tag = 'PHASE 1 · 3/9';
+        text = 'Server verarbeitet jeden Call unabhängig. Kein Speicher zwischen den Calls.';
+        setPkts('to-server');
+        server.classList.add('flash');
+      } else if (cur === 4) {
+        tag = 'PHASE 1 · 4/9';
+        text = 'Antworten zurück, Server vergisst. Jeder Call ist isoliert.';
+        setPkts('from-server');
+        server.classList.add('forget');
+        forgetLabel.classList.add('visible');
+      } else if (cur === 5) {
+        tag = 'PHASE 2 · 5/9';
+        text = 'Zoom auf Session A. Der System-Prompt liegt am Boden des Containers.';
+        layers.filter(l => +l.dataset.step <= 2).forEach(l => l.classList.add('visible'));
+      } else if (cur === 6) {
+        tag = 'PHASE 2 · 6/9';
+        text = 'Dazu kommen Memory-Files aus dem User-Account.';
+        layers.filter(l => +l.dataset.step <= 3).forEach(l => l.classList.add('visible'));
+      } else if (cur === 7) {
+        tag = 'PHASE 2 · 7/9';
+        text = 'Dazu der bisherige Verlauf (Turn 1, Turn 2 …) vom Client, nicht vom Server.';
+        layers.filter(l => +l.dataset.step <= 5).forEach(l => l.classList.add('visible'));
+      } else if (cur === 8) {
+        tag = 'PHASE 2 · 8/9';
+        text = 'Und ganz oben: Deine neue Nachricht. Das ist, was sich als „kleine Eingabe" anfühlt.';
+        layers.forEach(l => l.classList.add('visible'));
+      } else if (cur === 9) {
+        tag = 'PHASE 2 · 9/9';
+        text = 'Kompletter Container fliegt zum Server. Server verarbeitet, vergisst danach wieder.';
+        layers.forEach(l => l.classList.add('visible'));
+        container.classList.add('flying');
+        server2.classList.add('flash');
+        forgetStamp.classList.add('visible');
+      }
+
+      stepTag.textContent = tag;
+      stepText.textContent = text;
+      document.getElementById('prev').disabled = (cur === 1);
+      document.getElementById('next').disabled = (cur === TOTAL);
+    }
+
+    document.getElementById('next').addEventListener('click', () => {
+      if (cur < TOTAL) { cur++; render(); }
+    });
+    document.getElementById('prev').addEventListener('click', () => {
+      if (cur > 1) { cur--; render(); }
+    });
+    document.getElementById('reset').addEventListener('click', () => {
+      cur = 1; render();
+    });
+    // Tasten innerhalb iframe
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (cur < TOTAL) { cur++; render(); e.preventDefault(); }
+      } else if (e.key === 'ArrowLeft') {
+        if (cur > 1) { cur--; render(); e.preventDefault(); }
+      } else if (e.key.toLowerCase() === 'r') {
+        cur = 1; render();
+      }
+    });
+    // Re-render bei Resize (Packet-Koordinaten neu berechnen)
+    window.addEventListener('resize', () => { if (cur >= 1 && cur <= 4) render(); });
+
+    render();
+  })();
+  </script>
+</body>
+</html>
