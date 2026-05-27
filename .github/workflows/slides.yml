@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '*/slides/**'
+      - '2026-05-27-prompts-and-agents/**'
       - 'index.html'
       - 'assets/**'
       - '.github/workflows/slides.yml'
