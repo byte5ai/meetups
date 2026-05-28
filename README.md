@@ -6,6 +6,14 @@ Alle Decks live unter <https://byte5ai.github.io/meetups/>.
 
 ## Talks (neueste zuerst)
 
+### 2026-05-27 — omadia: an agentic os
+**Produkt-Launch · byte5 · 29 Slides**
+
+Launch-Deck für omadia, das agentic OS von byte5: warum Enterprise mit AI-Agenten festsitzt, welche drei Markt-Welten (Code-Frameworks, SaaS-Copilots, No-Code-Tools) am Mittelstand scheitern und wie omadia die Brücke zwischen KI und Geschäftssystemen schlägt. Mit den vier Versprechen Credentials, Integrationen, Builder und Privacy sowie einem Blick unter die Haube.
+
+- Slides: <https://byte5ai.github.io/meetups/2026-05-27-omadia-demo/>
+- Source: <https://github.com/byte5ai/meetups/tree/main/2026-05-27-omadia-demo>
+
 ### 2026-05-27 — Prompts und Agents
 **Tech Talk · Christian Wendler · 37 Slides**
 
