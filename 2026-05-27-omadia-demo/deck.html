@@ -1,0 +1,1619 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <title>omadia · an agentic os · Launch 27.05.2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- byte5 design tokens (colors, type, spacing, radii, shadows, motion) -->
+  <link rel="stylesheet" href="byte5-tokens.css" />
+
+  <!-- Deck stage: scaling, keyboard nav, thumbnail rail, print-to-PDF. -->
+  <script src="deck-stage.js"></script>
+
+  <style>
+    /* ============================================================
+       byte5 — Slide Deck Type & Spacing Scale (1920×1080)
+       Override these CSS custom properties to re-size the whole deck
+       without touching the slide markup.
+       ============================================================ */
+    :root {
+      /* Type scale (slide-appropriate, not web-density). */
+      --type-cover:     128px;   /* full-bleed cover headline */
+      --type-section:  180px;   /* huge section divider numeral */
+      --type-mega:     220px;   /* big-stat hero number */
+      --type-title:     76px;   /* standard slide title */
+      --type-subtitle:  44px;   /* subtitle / lead */
+      --type-body:      32px;   /* body copy */
+      --type-bullet:    34px;   /* bullets, list items */
+      --type-small:     24px;   /* footnote, caption — never below this */
+      --type-eyebrow:   24px;   /* uppercase eyebrow label */
+
+      /* Spacing (frame padding, vertical gaps). */
+      --pad-x:         120px;
+      --pad-top:       100px;
+      --pad-bottom:    100px;
+      --gap-title:      52px;   /* title → body */
+      --gap-item:       28px;   /* between bullets / items */
+      --gap-section:    72px;   /* between major chunks */
+      --gap-eyebrow:    20px;   /* eyebrow → title (consistent across slides) */
+
+      /* Deck-level brand */
+      --deck-bg:       var(--surface-gradient);     /* soft cyan→white wash */
+      --deck-fg:       var(--b5-blau-dunkel);
+    }
+
+    /* Slide chrome ----------------------------------------------- */
+    deck-stage { background: var(--b5-blau-dunkel); }   /* letterbox bars */
+
+    section {
+      box-sizing: border-box;
+      font-family: var(--font-text);
+      color: var(--deck-fg);
+      background: var(--deck-bg);
+      padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Title typography (Days One, sentence case, navy). */
+    .slide-title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: var(--type-title);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--b5-blau-dunkel);
+      margin: 0;
+    }
+
+    .slide-subtitle {
+      font-family: var(--font-text);
+      font-weight: 600;
+      font-size: var(--type-subtitle);
+      line-height: 1.25;
+      color: var(--b5-blau-dunkel);
+      margin: 0;
+    }
+
+    .lead {
+      font-family: var(--font-text);
+      font-weight: 600;
+      font-size: var(--type-subtitle);
+      line-height: 1.3;
+      color: var(--b5-blau-dunkel);
+      margin: 0;
+      max-width: 1600px;
+    }
+
+    .body-text {
+      font-family: var(--font-text);
+      font-weight: 400;
+      font-size: var(--type-body);
+      line-height: 1.55;
+      color: var(--gray-700);
+      margin: 0;
+      max-width: 1200px;
+    }
+
+    .eyebrow {
+      font-family: var(--font-text);
+      font-weight: 700;
+      font-size: var(--type-eyebrow);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--b5-blau);
+      margin: 0;
+    }
+
+    /* Shared slide-header pattern — eyebrow + title block.
+       Sits 80px below the logo on every content slide so the
+       "Dachzeilen" (FALLBEISPIEL, KOMPETENZFELDER, …) land at
+       the same vertical position across the deck. */
+    .slide-header {
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-eyebrow);
+      max-width: 1600px;
+    }
+    .slide-header .eyebrow { margin: 0; }
+
+    /* Magenta colon — STRUCTURAL marker only.
+       Use ONLY at the start of a label/lead, separated by a space. */
+    .colon {
+      color: var(--b5-magenta);
+      font-weight: 900;
+      font-family: var(--font-text);
+      margin-right: 0.4em;
+      display: inline-block;
+    }
+
+    /* Logo & footer chrome ----- */
+    .deck-logo {
+      position: absolute;
+      top: 60px;
+      left: var(--pad-x);
+      height: 56px;
+      width: auto;
+    }
+    .deck-logo--right { left: auto; right: var(--pad-x); }
+
+    .deck-footer {
+      position: absolute;
+      left: var(--pad-x);
+      right: var(--pad-x);
+      bottom: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-text);
+      font-weight: 600;
+      font-size: var(--type-small);
+      color: var(--gray-500);
+      letter-spacing: 0.04em;
+    }
+    .deck-footer--dark { color: rgba(255,255,255,0.55); }
+
+    /* Cyan circle motif — the brand signature visual. */
+    .circle-motif {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--b5-blau);
+      pointer-events: none;
+    }
+
+    /* ===== Reusable bullet list (cyan check) ===== */
+    .b5-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-item);
+      max-width: 1400px;
+    }
+    .b5-bullets li {
+      position: relative;
+      padding-left: 60px;
+      font-size: var(--type-bullet);
+      line-height: 1.45;
+      color: var(--gray-700);
+      font-weight: 500;
+    }
+    .b5-bullets li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.45em;
+      width: 32px;
+      height: 32px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23009FE3' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='4,12 10,18 20,6'/></svg>");
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    /* ============================================================
+       SLIDE 01 — COVER (full-bleed photo + big white headline)
+       ============================================================ */
+    .slide-cover {
+      padding: 0;
+      background: var(--b5-blau-dunkel);
+      color: var(--b5-weiss);
+    }
+    .slide-cover .cover-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .slide-cover .cover-tint {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,75,115,0.20) 0%, rgba(0,75,115,0.45) 55%, rgba(0,75,115,0.85) 100%);
+      z-index: 1;
+    }
+    .slide-cover > *:not(.cover-photo):not(.cover-tint) { z-index: 2; }
+    .slide-cover .cover-circle,
+    .slide-cover .cover-logo,
+    .slide-cover .cover-stack { position: absolute; }
+    .slide-cover .cover-stack {
+      position: absolute;
+      left: var(--pad-x);
+      right: var(--pad-x);
+      bottom: 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+    .slide-cover .cover-headline {
+      font-family: var(--font-display);
+      font-size: var(--type-cover);
+      line-height: 1.0;
+      letter-spacing: -0.015em;
+      color: var(--b5-weiss);
+      margin: 0;
+      max-width: 1500px;
+    }
+    .slide-cover .cover-lead {
+      max-width: 1500px;
+      font-family: var(--font-text);
+      font-weight: 600;
+      font-size: var(--type-body);
+      color: var(--b5-weiss);
+      line-height: 1.4;
+      margin: 0;
+    }
+    .slide-cover .cover-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 1500px;
+    }
+    .slide-cover .cover-subline {
+      font-family: var(--font-display);
+      font-size: 56px;
+      line-height: 1.05;
+      color: var(--b5-weiss);
+      margin: 0;
+    }
+    .slide-cover .cover-tagline {
+      font-family: var(--font-text);
+      font-weight: 600;
+      font-size: 32px;
+      line-height: 1.3;
+      color: rgba(255, 255, 255, 0.92);
+      margin: 0;
+      margin-top: 4px;
+    }
+    .slide-cover .cover-date {
+      font-family: var(--font-text);
+      font-weight: 500;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0;
+      margin-top: 24px;
+    }
+    .slide-cover .cover-circle {
+      position: absolute;
+      top: -220px;
+      right: -200px;
+      width: 620px;
+      height: 620px;
+      background: var(--b5-blau);
+      opacity: 0.92;
+      border-radius: 50%;
+      z-index: 1;
+    }
+    .slide-cover .cover-logo {
+      position: absolute;
+      top: 88px;
+      left: 120px;
+      height: 80px;
+    }
+
+    /* ============================================================
+       SLIDE 02 — AGENDA (numbered list)
+       ============================================================ */
+    .agenda-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 100px;
+      row-gap: 44px;
+      max-width: 1500px;
+    }
+    .agenda-list li {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      align-items: start;
+      gap: 28px;
+      padding-bottom: 28px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+    .agenda-list .num {
+      font-family: var(--font-display);
+      font-size: 44px;
+      color: var(--b5-blau);
+      line-height: 1;
+      padding-top: 4px;
+    }
+    .agenda-list .item-title {
+      font-family: var(--font-text);
+      font-weight: 700;
+      font-size: 36px;
+      color: var(--b5-blau-dunkel);
+      line-height: 1.2;
+    }
+    .agenda-list .item-sub {
+      font-family: var(--font-text);
+      font-weight: 400;
+      font-size: var(--type-small);
+      color: var(--gray-500);
+      margin-top: 6px;
+    }
+
+    /* ============================================================
+       SLIDE 03 — SECTION DIVIDER (dark navy, big number + label)
+       ============================================================ */
+    .slide-section {
+      background: var(--b5-blau-dunkel);
+      color: var(--b5-weiss);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 40px;
+    }
+    .slide-section .sec-eyebrow {
+      font-family: var(--font-text);
+      font-weight: 700;
+      font-size: var(--type-eyebrow);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin: 0;
+    }
+    .slide-section .sec-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      column-gap: 80px;
+    }
+    .slide-section .sec-num {
+      font-family: var(--font-display);
+      font-size: var(--type-section);
+      line-height: 0.9;
+      color: var(--b5-blau);
+      letter-spacing: -0.02em;
+    }
+    .slide-section .sec-body {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .slide-section .sec-title {
+      font-family: var(--font-display);
+      font-size: 112px;
+      line-height: 1.0;
+      color: var(--b5-weiss);
+      max-width: 1200px;
+      margin: -2px 0 0;
+    }
+    .slide-section .sec-desc {
+      font-family: var(--font-text);
+      font-weight: 500;
+      font-size: var(--type-body);
+      line-height: 1.5;
+      color: rgba(255,255,255,0.78);
+      max-width: 900px;
+      margin: 0;
+    }
+
+    /* ============================================================
+       SLIDE 04 — CONTENT (uses .slide-header + .b5-bullets)
+       ============================================================ */
+
+    /* ============================================================
+       SLIDE 05 — TEXT + IMAGE (header on top, two columns below)
+       ============================================================ */
+    .slide-split { display: block; }
+    .slide-split .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 100px;
+      align-items: start;
+      margin-top: var(--gap-section);
+    }
+    .slide-split .split-text {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .slide-split .split-image {
+      width: 100%;
+      height: 480px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      background: var(--gray-100);
+    }
+    .slide-split .split-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ============================================================
+       SLIDE 06 — FEATURE GRID (3 cards, number eyebrow)
+       ============================================================ */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px;
+      margin-top: var(--gap-section);
+    }
+    .feature-card {
+      background: var(--b5-weiss);
+      border-radius: var(--radius-md);
+      padding: 48px 44px 44px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-height: 380px;
+      max-height: 480px;
+      position: relative;
+    }
+    .feature-card .card-num {
+      font-family: var(--font-display);
+      font-size: 32px;
+      color: var(--b5-blau);
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+    .feature-card .card-divider {
+      width: 56px;
+      height: 4px;
+      background: var(--b5-blau);
+      border-radius: 4px;
+      margin: 4px 0 12px;
+    }
+    .feature-card h3 {
+      font-family: var(--font-display);
+      font-size: 40px;
+      line-height: 1.1;
+      color: var(--b5-blau-dunkel);
+      margin: 0;
+    }
+    .feature-card p {
+      font-family: var(--font-text);
+      font-weight: 400;
+      font-size: var(--type-body);
+      line-height: 1.45;
+      color: var(--gray-700);
+      margin: 0;
+    }
+
+    /* ============================================================
+       SLIDE 07 — BIG STAT (header on top, then number + context)
+       ============================================================ */
+    .slide-stat { display: block; }
+    .slide-stat .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 100px;
+      align-items: start;
+      margin-top: var(--gap-section);
+    }
+    .big-number {
+      font-family: var(--font-display);
+      font-size: var(--type-mega);
+      line-height: 0.88;
+      letter-spacing: -0.03em;
+      color: var(--b5-blau);
+      margin: 0;
+    }
+    .big-number .unit {
+      font-size: 0.45em;
+      color: var(--b5-blau);
+      margin-left: 0.05em;
+    }
+    .stat-caption {
+      font-family: var(--font-text);
+      font-weight: 500;
+      font-size: var(--type-body);
+      line-height: 1.4;
+      color: var(--gray-700);
+      margin: 24px 0 0;
+    }
+    .stat-side {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding-top: 12px;
+    }
+
+    /* ============================================================
+       SLIDE 11 — PROCESS / TIMELINE (4 steps with connector)
+       ============================================================ */
+    .process {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: var(--gap-section);
+      position: relative;
+    }
+    .process::before {
+      content: "";
+      position: absolute;
+      left: 60px;
+      right: 60px;
+      top: 50px;
+      height: 4px;
+      background: var(--gray-200);
+      z-index: 0;
+    }
+    .process-step {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 0 24px;
+    }
+    .process-step .dot {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--b5-blau);
+      color: var(--b5-weiss);
+      font-family: var(--font-display);
+      font-size: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 36px;
+      box-shadow: 0 0 0 12px var(--gray-50);
+    }
+    .process-step h3 {
+      font-family: var(--font-display);
+      font-size: 36px;
+      line-height: 1.1;
+      color: var(--b5-blau-dunkel);
+      margin: 0 0 16px;
+    }
+    .process-step p {
+      font-family: var(--font-text);
+      font-size: 26px;
+      line-height: 1.45;
+      color: var(--gray-700);
+      margin: 0;
+    }
+
+    /* ============================================================
+       SLIDE 13 — CLOSING / CONTACT (with magenta speech bubble)
+       ============================================================ */
+    .slide-contact {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      column-gap: 80px;
+      align-items: center;
+    }
+    .contact-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+    .contact-stack h2 {
+      font-family: var(--font-display);
+      font-size: 64px;
+      line-height: 1.05;
+      color: var(--b5-blau-dunkel);
+      margin: 0;
+      max-width: 880px;
+    }
+    .contact-details {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      column-gap: 32px;
+      row-gap: 28px;
+      font-family: var(--font-text);
+      font-size: 28px;
+      color: var(--b5-blau-dunkel);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .contact-details .label {
+      font-size: var(--type-small);
+      color: var(--gray-500);
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      padding-top: 4px;
+    }
+
+    .speech-bubble {
+      width: 440px;
+      height: 440px;
+      justify-self: end;
+      position: relative;
+      filter: drop-shadow(0 18px 32px rgba(234, 81, 114, 0.32));
+    }
+    .speech-bubble .bubble-main {
+      position: absolute;
+      top: 1%;
+      right: 1%;
+      width: 84%;
+      height: 84%;
+      background: var(--b5-magenta);
+      border-radius: 50%;
+      box-sizing: border-box;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--b5-weiss);
+      font-family: var(--font-display);
+      font-size: 38px;
+      line-height: 1.15;
+    }
+    .speech-bubble .bubble-tail {
+      position: absolute;
+      bottom: 1%;
+      left: 1%;
+      width: 36%;
+      height: 36%;
+      background: var(--b5-magenta);
+      border-radius: 50%;
+    }
+  </style>
+
+  <!-- Speaker notes — one entry per slide, in deck order. -->
+  <script type="application/json" id="speaker-notes">
+  [
+    "Cover — Begrüßung. Sag wer du bist, was omadia ist (in einem Satz), warum wir heute hier sind. 30 Sekunden, dann weiter.",
+    "Agenda — kurz durchgehen. Fünf Abschnitte, ungefähr gleich lang. Fragen am Ende jedes Abschnitts.",
+    "Section divider Teil 01 — kurzer Atemzug. Bühne ist gesetzt: jetzt geht's um die Lage am Markt.",
+    "Lage — den magenta Colon-Lead vorlesen, dann die vier Bullets. Pointe: Es ist nicht die KI, es ist die Brücke. Diese Zeile zweimal hörbar machen.",
+    "Section divider Teil 02 — Atemzug. Bridge in den Wettbewerbs-Vergleich. Ein Satz: 'Schauen wir uns an, was es heute am Markt gibt.'",
+    "Drei Welten — eine Karte nach der anderen. Keine Hassrede gegen die Wettbewerber — sachlich beobachtend. Pointe: jede Welt hat genau einen blinden Fleck.",
+    "Section divider Teil 03 — der Pivot. Hier wechselt die Tonalität von Diagnose zu Lösung.",
+    "Unsere Antwort · OS-Metapher — sag laut: 'omadia ist ein Betriebssystem für Agenten.' Erklär kurz die Analogie: wie ein OS für Computer — nur dass Agenten wie Apps darauf laufen.",
+    "Unsere Antwort · OS-Konzepte — drei Karten: Multi-Agent, Shared Services, Composable. Bridge zu Vier Versprechen: 'Genau dieses Zusammenspiel macht die vier Versprechen technisch möglich.'",
+    "Section divider Teil 04 — Bridge in die Versprechen-Übersicht. Ein Satz: 'Vier konkrete Versprechen — Credentials, Integrationen, Builder, Privacy. Wir gehen jedes einzeln durch.'",
+    "Vier Versprechen — Übersicht. Bullets vorlesen, NICHT vertiefen. Sagen: die nächsten Folien zeigen jedes einzeln, mit Mechanik.",
+    "Versprechen 1 Credentials · Überblick — Problem in einem Satz: ein Key für alle, jeder Agent kann alles. Lösung: Vault, scoped per Agent, Audit-Log.",
+    "Versprechen 1 Credentials · Mechanik — drei Bausteine: Vault (verschlüsselt), Scoping (per Agent), Audit-Log (jeder Call). Diese drei Wörter sind die Antwort auf jede Compliance-Frage.",
+    "Versprechen 2 Integrationen · Überblick — Problem: generische Webhooks sind kein Plan. Lösung: First-Class-Connectoren mit Auth, Schemas, Retries.",
+    "Versprechen 2 Integrationen · Connectoren — die Liste vorlesen. Hier ist der konkrete Beweis: das sind echte Systeme, keine Buzzwords. Letzter Bullet ist der wichtigste: dein eigenes System in unter 200 Zeilen.",
+    "Versprechen 3 Two-Door · Überblick — Problem: Code-Frameworks schließen Ops aus, No-Code-Tools schließen Devs aus. Lösung: beide Türen auf einer Plattform.",
+    "Versprechen 3 Two-Door · Mechanik — Operator-Tür, Developer-Tür, geteiltes Capability-Modell. Pointe: derselbe Agent kann von beiden Seiten gebaut und erweitert werden.",
+    "Versprechen 4 Privacy · Überblick — Problem: deine Daten landen unmaskiert beim Public-LLM. Lösung: reversible Tokenisierung. Nächste Folie: wie das genau funktioniert.",
+    "Versprechen 4 Privacy · Flow — vier Schritte: Anfrage, Maskieren, LLM, Rehydrieren. Den Vault auf Schritt 2 betonen — die Map liegt verschlüsselt bei dir, nicht beim Provider.",
+    "Big Stat — 0 Bytes. Die Zahl landen lassen. Zwei Sekunden Pause. Dann den Side-Text als Beweis.",
+    "Section divider Teil 05 — Zoom-out. Bridge in die Architektur-Tiefe. Ein Satz: 'Jetzt schauen wir uns an, wie omadia das eigentlich macht — und was du damit baust.'",
+    "Agent-Anatomie — drei Bausteine: Capabilities (was er kann), Plugins (woran er hängt), Persona (wer er ist). Knappe Karten, jede mit einem Satz.",
+    "Plugin-Struktur — drei Typen: Channels, Integrationen, Agent-Pakete. Beliebig kombinierbar. Plugin-SDK einmal erwähnen: in TypeScript schreibbar.",
+    "Builder — DER architektonische USP. Klassische Skill-Dateien (Claude Skills, GPT Custom Instructions) sind Prompt-Empfehlungen: das Modell entscheidet, ob es sich erinnert. omadia generiert aus der Skill-Definition echten TypeScript-Code, der als getyptes Tool aufgerufen wird. Pointe: 'Vom Prompt zur Werkbank — vom Wunschdenken zum Werkzeug.'",
+    "Knowledge Graph — strukturierte Wissensbasis, kein RAG-Dokumentenstapel. Drei Karten: Strukturiert (Entitäten + Relationen), Cross-System (verbindet Confluence + ERP + Mail), Agent-Aware (jeder Agent sieht nur seinen erlaubten Ausschnitt). Pointe: 'Wissen ist ein Graph, kein Stapel PDFs.'",
+    "Kemia — Quality-Layer für Agent-Outputs. Drei Bausteine: Quality-Guard (Verifikation vor Auslieferung), Snapshots (jeder Turn replayable), Bundle-Export (fertige Agenten portierbar). Pointe: 'Was sicherstellt, dass der Agent nicht halluziniert.'",
+    "Routinen + UI — drei Karten: Routinen (Cron-Trigger), Adaptive Cards (Agent rendert UI), Approval-Flows (Composition). Pointe: 'Agenten kommen zu dir, du gehst nicht zu ihnen.' Beispiel: Freitag 16 Uhr Wochenreport-Card mit 'Freigeben'-Button in Teams.",
+    "Möglichkeiten — fünf konkrete Beispiel-Agenten, nicht abstrakt. Letzter Bullet ist der Call-to-Action: dein eigener Agent in einer Stunde.",
+    "Contact — Headline wiederholen. E-Mail nennen. Einladen: erste Frage geht an die senior person im Raum."
+  ]
+  </script>
+</head>
+
+<body>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ============================================================
+       SLIDE 01 — COVER
+       ============================================================ -->
+  <section data-label="01 Cover" class="slide-cover">
+    <img class="cover-photo" src="assets/mood/omadia-cover-agentic-os.png" alt="" />
+    <div class="cover-tint"></div>
+    <div class="cover-circle"></div>
+    <img class="cover-logo" src="assets/byte5-logo-white.png" alt="byte5" />
+
+    <div class="cover-stack">
+      <h1 class="cover-headline">omadia</h1>
+      <div class="cover-meta">
+        <p class="cover-subline"><span class="colon">:</span>an agentic os</p>
+        <p class="cover-tagline">Wie aus Agenten ein Team wird</p>
+        <p class="cover-date">Launch · 27.05.2026</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 02 — AGENDA
+       ============================================================ -->
+  <section data-label="02 Agenda">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Agenda</p>
+      <h1 class="slide-title">Worüber wir heute sprechen</h1>
+    </div>
+
+    <ol class="agenda-list" style="margin-top: var(--gap-section);">
+        <li>
+          <span class="num">01</span>
+          <div>
+            <div class="item-title">Die Lage</div>
+            <div class="item-sub">Warum Enterprise mit AI-Agenten festsitzt.</div>
+          </div>
+        </li>
+        <li>
+          <span class="num">02</span>
+          <div>
+            <div class="item-title">Drei Welten, drei Kompromisse</div>
+            <div class="item-sub">Was es heute am Markt gibt — und woran es scheitert.</div>
+          </div>
+        </li>
+        <li>
+          <span class="num">03</span>
+          <div>
+            <div class="item-title">Unsere Antwort</div>
+            <div class="item-sub">omadia — an agentic os.</div>
+          </div>
+        </li>
+        <li>
+          <span class="num">04</span>
+          <div>
+            <div class="item-title">Vier Versprechen</div>
+            <div class="item-sub">Credentials · Integrationen · Builder · Privacy.</div>
+          </div>
+        </li>
+        <li>
+          <span class="num">05</span>
+          <div>
+            <div class="item-title">Unter der Haube</div>
+            <div class="item-sub">Architektur, Builder, Wissen, Qualität, Routinen, Beispiele.</div>
+          </div>
+        </li>
+      </ol>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>Agenda</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 03 — SECTION DIVIDER · Teil 01
+       ============================================================ -->
+  <section data-label="03 Section divider · Teil 01" class="slide-section">
+    <div class="sec-row">
+      <div class="sec-num">01</div>
+      <div class="sec-body">
+        <h2 class="sec-title">Die Lage.</h2>
+        <p class="sec-desc">
+          <span class="colon" style="color: var(--b5-magenta);">:</span>AI-Agenten sind im Konsumentenalltag angekommen. In den Systemen, mit denen dein Unternehmen Geld verdient, bisher nicht.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 04 — CONTENT · Die Lage
+       ============================================================ -->
+  <section data-label="04 Content · Lage">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Die Lage</p>
+      <h1 class="slide-title">AI-Agenten sind angekommen — im Enterprise nicht.</h1>
+      <p class="lead" style="margin-top: 8px;">
+        <span class="colon">:</span>Drei harte Painpoints halten Mittelstand und Enterprise zurück.
+      </p>
+    </div>
+
+    <ul class="b5-bullets" style="margin-top: var(--gap-section);">
+      <li>Mitarbeiter nutzen ChatGPT, Claude, Perplexity täglich — privat und am Schreibtisch.</li>
+      <li>In deinen Bestandssystemen — ERP, Confluence, Teams, M365 — passiert noch wenig.</li>
+      <li><strong>Compliance · Vendor-Lock-in · Integrations-Tiefe</strong> — alle drei Painpoints wirken gleichzeitig.</li>
+      <li>Das Problem ist nicht die KI. Es ist die Brücke zwischen KI und Geschäftssystem.</li>
+    </ul>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>01 · Die Lage</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 05 — SECTION DIVIDER · Teil 02 · Drei Welten
+       ============================================================ -->
+  <section data-label="05 Section divider · Teil 02" class="slide-section">
+    <div class="sec-row">
+      <div class="sec-num">02</div>
+      <div class="sec-body">
+        <h2 class="sec-title">Drei Welten, drei Kompromisse.</h2>
+        <p class="sec-desc">
+          <span class="colon" style="color: var(--b5-magenta);">:</span>Code-Frameworks, SaaS-Copilots, No-Code-Tools. Drei Antworten am Markt — und keine löst das Mittelstands-Problem.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 06 — FEATURE GRID · Drei Welten
+       ============================================================ -->
+  <section data-label="06 Feature grid · Drei Welten">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Status Quo</p>
+      <h1 class="slide-title">Drei Welten — drei Kompromisse.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Code-Frameworks</h3>
+        <p>LangGraph, CrewAI, AutoGen. Mächtig — aber nur für Devs. Jeder Agent ein eigenes Deploy.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>SaaS-Copilots</h3>
+        <p>Copilot Studio, ChatGPT Enterprise. Sofort startklar — aber deine Daten landen beim Anbieter.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>No-Code-Tools</h3>
+        <p>n8n, Make, Zapier. Klickbar — aber Workflows, keine Agenten mit Gedächtnis und Urteil.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>02 · Drei Welten</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 06 — SECTION DIVIDER · Teil 03
+       ============================================================ -->
+  <section data-label="07 Section divider · Teil 03" class="slide-section">
+    <div class="sec-row">
+      <div class="sec-num">03</div>
+      <div class="sec-body">
+        <h2 class="sec-title">Unsere Antwort.</h2>
+        <p class="sec-desc">
+          <span class="colon" style="color: var(--b5-magenta);">:</span>Kein weiteres Framework. Kein weiterer SaaS-Lock-in. Ein Betriebssystem für Agenten — auf deiner Infrastruktur, mit deinen Daten, an deinen Systemen.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 08 — TEXT + IMAGE · Unsere Antwort · OS-Metapher
+       ============================================================ -->
+  <section data-label="08 Unsere Antwort · OS-Metapher" class="slide-split">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Unsere Antwort</p>
+      <h1 class="slide-title">Ein Betriebssystem für Agenten.</h1>
+    </div>
+
+    <div class="split-grid">
+      <div class="split-text">
+        <p class="body-text">
+          <span class="colon">:</span>Wie ein Betriebssystem für Computer — nur dass darauf nicht Apps laufen, sondern Agenten.
+        </p>
+        <p class="body-text">
+          Sie installieren sich, deinstallieren sich, teilen sich gemeinsame Dienste — Vault, Knowledge Graph, Channel-Layer — und arbeiten parallel an denselben Daten, ohne sich in die Quere zu kommen.
+        </p>
+      </div>
+
+      <div class="split-image">
+        <img src="assets/mood/omadia-cover-agentic-os.png" alt="" />
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>03 · Unsere Antwort</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 09 — FEATURE GRID · Unsere Antwort · OS-Konzepte
+       ============================================================ -->
+  <section data-label="09 Unsere Antwort · OS-Konzepte">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Unsere Antwort</p>
+      <h1 class="slide-title">So passt es zusammen.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Multi-Agent</h3>
+        <p>Viele Agenten parallel. Jeder mit eigener Aufgabe, eigener Persona, eigenen Berechtigungen. Sie sehen sich gegenseitig, wenn es nötig ist.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>Shared Services</h3>
+        <p>Vault, Knowledge Graph, Privacy-Proxy, Audit-Log. Einmal aufgesetzt — von jedem Agenten nutzbar. Kein Wildwuchs, kein doppeltes Setup.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>Composable</h3>
+        <p>Agent + Plugin + Channel zusammenklicken. Neue Anforderung? Neuen Plugin installieren, an bestehenden Agenten hängen. Keine Migration.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>03 · Unsere Antwort</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 10 — SECTION DIVIDER · Teil 04 · Vier Versprechen
+       ============================================================ -->
+  <section data-label="10 Section divider · Teil 04" class="slide-section">
+    <div class="sec-row">
+      <div class="sec-num">04</div>
+      <div class="sec-body">
+        <h2 class="sec-title">Vier Versprechen.</h2>
+        <p class="sec-desc">
+          <span class="colon" style="color: var(--b5-magenta);">:</span>Credentials. Native Integrationen. Two-Door-Builder. Privacy by Tokenization.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 09 — CONTENT · Vier Versprechen
+       ============================================================ -->
+  <section data-label="11 Content · Vier Versprechen">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Vier Versprechen</p>
+      <h1 class="slide-title">Was omadia anders macht.</h1>
+    </div>
+
+    <ul class="b5-bullets" style="margin-top: var(--gap-section);">
+      <li><strong>Credentials, scoped per Agent.</strong> Jeder Agent sieht nur, was er sehen muss.</li>
+      <li><strong>Native Integrationen.</strong> ERP, Confluence, M365, Teams — nicht angeflanscht, sondern fest verdrahtet.</li>
+      <li><strong>Two-Door-Builder.</strong> Operator klickt, Dev erweitert. Eine Plattform, zwei Türen.</li>
+      <li><strong>Privacy by Tokenization.</strong> Deine Daten verlassen das Unternehmen nie unmaskiert.</li>
+    </ul>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 08 — TEXT + IMAGE · Versprechen 1 · Credentials
+       ============================================================ -->
+  <section data-label="12 Versprechen 1 · Credentials" class="slide-split">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Versprechen 1 · Credentials</p>
+      <h1 class="slide-title">Jeder Agent sieht nur, was er sehen muss.</h1>
+    </div>
+
+    <div class="split-grid">
+      <div class="split-text">
+        <p class="body-text">
+          <span class="colon">:</span>Heute teilt deine Organisation einen einzigen API-Key. Jeder Agent kann damit alles. Granular einschränken? Kaum machbar.
+        </p>
+        <p class="body-text">
+          omadia hält jede Credential im Vault und vergibt sie pro Agent und pro Aufgabe. Jederzeit widerrufbar, jede Nutzung im Audit-Log.
+        </p>
+      </div>
+
+      <div class="split-image">
+        <img src="assets/mood/omadia-credentials-vault.png" alt="" />
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 09 — FEATURE GRID · Versprechen 1 · Mechanik
+       ============================================================ -->
+  <section data-label="13 Versprechen 1 · Mechanik">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Versprechen 1 · Mechanik</p>
+      <h1 class="slide-title">Wie Credentials sicher bleiben.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Vault</h3>
+        <p>Jede Credential verschlüsselt. Kein Plaintext in ENV, kein Plaintext in Code.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>Scoping</h3>
+        <p>Jeder Agent bekommt ein eigenes Capability-Token. Widerruf pro Agent, nicht pro System.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>Audit-Log</h3>
+        <p>Jeder Tool-Call wird protokolliert: wer, wann, mit welcher Berechtigung. Compliance-fertig.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 10 — TEXT + IMAGE · Versprechen 2 · Integrationen
+       ============================================================ -->
+  <section data-label="14 Versprechen 2 · Integrationen" class="slide-split">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Versprechen 2 · Integrationen</p>
+      <h1 class="slide-title">ERP, Confluence, M365 — fest verdrahtet.</h1>
+    </div>
+
+    <div class="split-grid">
+      <div class="split-text">
+        <p class="body-text">
+          <span class="colon">:</span>Generische HTTP-Webhooks sind ein Ausweg, kein Plan. Was passiert mit Multi-Tenancy? Mit OAuth-Refreshes? Mit Rate-Limits in der Nacht?
+        </p>
+        <p class="body-text">
+          omadia liefert First-Class-Connectoren für die Systeme, in denen der Mittelstand wirklich arbeitet. Mit Auth-Flows, mit Schemas, mit Retries.
+        </p>
+      </div>
+
+      <div class="split-image">
+        <img src="assets/mood/omadia-native-integrations.png" alt="" />
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 11 — CONTENT · Versprechen 2 · Native Connectoren
+       ============================================================ -->
+  <section data-label="15 Versprechen 2 · Connectoren">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Versprechen 2 · Native Connectoren</p>
+      <h1 class="slide-title">Was heute verbunden ist.</h1>
+      <p class="lead" style="margin-top: 8px;">
+        <span class="colon">:</span>Echte Systeme, fest verdrahtet — nicht über generische Webhooks.
+      </p>
+    </div>
+
+    <ul class="b5-bullets" style="margin-top: var(--gap-section);">
+      <li><strong>ERP.</strong> Sales, Inventory, HR, Accounting — pro Modul ein eigenes Plugin.</li>
+      <li><strong>Confluence.</strong> Pages lesen und schreiben. Spaces und Anhänge.</li>
+      <li><strong>Microsoft 365.</strong> Mail, Calendar, Files, Teams-Chats.</li>
+      <li><strong>Teams · Telegram.</strong> Conversational Channels plus Outbound-Push.</li>
+      <li><strong>Dein System.</strong> Via Plugin-SDK. Unter 200 Zeilen TypeScript.</li>
+    </ul>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 12 — TEXT + IMAGE · Versprechen 3 · Two-Door-Builder
+       ============================================================ -->
+  <section data-label="16 Versprechen 3 · Two-Door" class="slide-split">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Versprechen 3 · Two-Door-Builder</p>
+      <h1 class="slide-title">Eine Plattform, zwei Türen.</h1>
+    </div>
+
+    <div class="split-grid">
+      <div class="split-text">
+        <p class="body-text">
+          <span class="colon">:</span>Code-Frameworks schließen Operations aus. Low-Code-Tools schließen Devs aus. Beides ergibt kein Team.
+        </p>
+        <p class="body-text">
+          Bei omadia bauen Operator Agenten per UI. Devs erweitern die Plattform per Plugin-SDK. Beide arbeiten auf demselben Capability-Modell.
+        </p>
+      </div>
+
+      <div class="split-image">
+        <img src="assets/mood/omadia-two-door-builder.png" alt="" />
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 13 — FEATURE GRID · Versprechen 3 · Mechanik
+       ============================================================ -->
+  <section data-label="17 Versprechen 3 · Mechanik">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Versprechen 3 · Mechanik</p>
+      <h1 class="slide-title">Zwei Türen, ein Capability-Modell.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Operator-Tür</h3>
+        <p>Browser-UI. Plugin-Marketplace. Drag-und-Drop. Test-Console.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>Developer-Tür</h3>
+        <p>TypeScript-SDK. Capability-Interfaces. Lokale Entwicklung mit Hot-Reload.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>Geteiltes Modell</h3>
+        <p>Beide Türen produzieren denselben Agent. Operator passt Dev-Agenten an. Dev erweitert Operator-Agenten.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 14 — TEXT + IMAGE · Versprechen 4 · Privacy
+       ============================================================ -->
+  <section data-label="18 Versprechen 4 · Privacy" class="slide-split">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Versprechen 4 · Privacy by Tokenization</p>
+      <h1 class="slide-title">Deine Daten verlassen das Unternehmen nie unmaskiert.</h1>
+    </div>
+
+    <div class="split-grid">
+      <div class="split-text">
+        <p class="body-text">
+          <span class="colon">:</span>Wenn ein Agent ChatGPT, Claude oder Gemini fragt, müssen Namen, IBANs, Personalien aus der Anfrage raus — und in der Antwort wieder rein.
+        </p>
+        <p class="body-text">
+          omadia tokenisiert reversibel: vor dem Versand maskiert, im Unternehmen wieder aufgelöst. Jede Anfrage erzeugt eine Privacy Receipt — wer was zu sehen bekam, und was nicht.
+        </p>
+      </div>
+
+      <div class="split-image">
+        <img src="assets/mood/omadia-privacy-tokenization.png" alt="" />
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 15 — PROCESS · Versprechen 4 · Privacy-Flow
+       ============================================================ -->
+  <section data-label="19 Versprechen 4 · Flow">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Versprechen 4 · Privacy-Flow</p>
+      <h1 class="slide-title">Wie ein Token reist.</h1>
+    </div>
+
+    <div class="process">
+      <div class="process-step">
+        <div class="dot">1</div>
+        <h3>Anfrage</h3>
+        <p>Agent will einen Public-LLM-Provider fragen. Anfrage enthält Personalien, Zahlen, Domain-Wissen.</p>
+      </div>
+      <div class="process-step">
+        <div class="dot">2</div>
+        <h3>Maskieren</h3>
+        <p>Privacy-Proxy ersetzt sensible Spans durch Token-Platzhalter. Token-Map landet verschlüsselt im Vault.</p>
+      </div>
+      <div class="process-step">
+        <div class="dot">3</div>
+        <h3>LLM</h3>
+        <p>Public-Provider sieht nur die maskierte Version. Antwort kommt mit denselben Platzhaltern zurück.</p>
+      </div>
+      <div class="process-step">
+        <div class="dot">4</div>
+        <h3>Rehydrieren</h3>
+        <p>Innerhalb deines Unternehmens werden Tokens aufgelöst. Privacy Receipt protokolliert, was maskiert war.</p>
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 16 — BIG STAT · Privacy-Beweis
+       ============================================================ -->
+  <section data-label="20 Big stat" class="slide-stat">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Privacy by Tokenization</p>
+      <h1 class="slide-title">So viel verlässt dein Unternehmen unmaskiert.</h1>
+    </div>
+
+    <div class="stat-grid">
+      <div>
+        <div class="big-number">0<span class="unit"> Bytes</span></div>
+        <p class="stat-caption">personenbezogener Daten erreichen einen Public-LLM-Provider im Klartext.</p>
+      </div>
+
+      <div class="stat-side">
+        <p class="body-text">
+          <span class="colon">:</span>Tokenisierung passiert vor dem Versand, Rehydrierung erst innerhalb deines Unternehmens. Jede Anfrage erzeugt eine Privacy Receipt — auditierbar, reproduzierbar, gerichtsfest.
+        </p>
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>04 · Vier Versprechen</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 19 — SECTION DIVIDER · Teil 05 · Unter der Haube
+       ============================================================ -->
+  <section data-label="21 Section divider · Teil 05" class="slide-section">
+    <div class="sec-row">
+      <div class="sec-num">05</div>
+      <div class="sec-body">
+        <h2 class="sec-title">Unter der Haube.</h2>
+        <p class="sec-desc">
+          <span class="colon" style="color: var(--b5-magenta);">:</span>Wie omadia Agenten bauen, wie sie ihr Wissen finden, wie sie sich melden — und was du damit konkret baust.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 20 — FEATURE GRID · Agent-Anatomie
+       ============================================================ -->
+  <section data-label="22 Agent-Anatomie">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Architektur · Agent-Anatomie</p>
+      <h1 class="slide-title">Was einen omadia-Agent ausmacht.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Capabilities</h3>
+        <p>Welcher LLM, welcher Vector-Store, welche Memory. Pro Agent auswählbar — Marketing-Agent auf OpenAI, HR-Agent auf On-Prem-Llama.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>Plugins</h3>
+        <p>Was der Agent erreichen darf: Channels (Teams, Telegram), Integrationen (ERP, Confluence), Sub-Agenten zum Delegieren.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>Persona</h3>
+        <p>Wer der Agent ist: Systemprompt, Memory-Scope, Verhaltensregeln. Versioniert, A/B-testbar, jederzeit anpassbar.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>05 · Unter der Haube</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 18 — FEATURE GRID · Plugin-Struktur
+       ============================================================ -->
+  <section data-label="23 Plugin-Struktur">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Architektur · Plugin-Modell</p>
+      <h1 class="slide-title">Drei Bausteine, beliebig kombinierbar.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Channels</h3>
+        <p>Conversational Interfaces: Teams, Telegram, Web-Chat, Voice. Ein Agent kann gleichzeitig auf mehreren Channels leben.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>Integrationen</h3>
+        <p>Verbindung zu Bestandssystemen: ERP, Confluence, M365, eigene REST/GraphQL-APIs via SDK.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>Agent-Pakete</h3>
+        <p>Vorgefertigte Rollen mit Persona und Plugin-Set: HR, Buchhaltung, Compliance. Installieren, anpassen, fertig.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>05 · Unter der Haube</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 19 — TEXT + IMAGE · Builder
+       ============================================================ -->
+  <section data-label="24 Builder" class="slide-split">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Architektur · Builder</p>
+      <h1 class="slide-title">Vom Prompt zur Werkbank.</h1>
+    </div>
+
+    <div class="split-grid">
+      <div class="split-text">
+        <p class="body-text">
+          <span class="colon">:</span>Klassische Skill-Dateien geben dem Modell Empfehlungen mit in den Prompt — „Wenn X, denk an Y." Das Modell entscheidet, ob es sich daran erinnert. Drift garantiert.
+        </p>
+        <p class="body-text">
+          omadia generiert aus deiner Skill-Definition <strong>echten TypeScript-Code</strong>: getypte Tools, die der Agent als deterministische Werkzeuge aufruft. Kein „denk dran" — sondern Call.
+        </p>
+      </div>
+
+      <div class="split-image">
+        <img src="assets/mood/omadia-two-door-builder.png" alt="" />
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>05 · Unter der Haube</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 20 — FEATURE GRID · Knowledge Graph
+       ============================================================ -->
+  <section data-label="25 Knowledge Graph">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Architektur · Knowledge Graph</p>
+      <h1 class="slide-title">Wissen, das mehr ist als eine Liste.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Strukturiert</h3>
+        <p>Entitäten und Beziehungen statt Dokumenten-Liste. Person → arbeitet an → Projekt → gehört zu → Abteilung.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>Cross-System</h3>
+        <p>Verbindet Confluence-Pages mit ERP-Records mit Mail-Threads. Eine Wahrheit, viele Quellen.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>Agent-Aware</h3>
+        <p>Jeder Agent sieht nur den Graph-Ausschnitt, den seine Credentials erlauben. Scoped Reads, auditierbar.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>05 · Unter der Haube</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 21 — FEATURE GRID · Kemia (Quality)
+       ============================================================ -->
+  <section data-label="26 Kemia">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Qualität · Kemia</p>
+      <h1 class="slide-title">Bevor ein Output dein Haus verlässt.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Quality-Guard</h3>
+        <p>Verifiziert Agent-Outputs gegen Schema, Halluzinations-Checks und Compliance-Regeln — bevor sie ausgeliefert werden.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>Snapshots</h3>
+        <p>Jeder Agent-Turn ist replayable. „Warum hat der Agent das gesagt?" wird zur Akte, nicht zum Rätsel.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>Bundle-Export</h3>
+        <p>Fertige Agenten als Paket exportieren — für Backup, Portierung oder Übergabe an Kunden.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>05 · Unter der Haube</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 22 — FEATURE GRID · Routinen + UI
+       ============================================================ -->
+  <section data-label="27 Routinen + UI">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Architektur · Routinen + UI</p>
+      <h1 class="slide-title">Agenten, die zu dir kommen.</h1>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="card-num">01</div>
+        <div class="card-divider"></div>
+        <h3>Routinen</h3>
+        <p>Cron oder Event-Trigger. „Jeden Montag 8 Uhr Wochenreport" — keine Schreibtisch-Wecker mehr.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">02</div>
+        <div class="card-divider"></div>
+        <h3>Adaptive Cards</h3>
+        <p>Der Agent rendert passende UI in Teams: Buttons, Formulare, Tabellen — statt Plain-Text-Wallpaper.</p>
+      </article>
+      <article class="feature-card">
+        <div class="card-num">03</div>
+        <div class="card-divider"></div>
+        <h3>Approval-Flows</h3>
+        <p>Routine löst Card aus, du klickst „Freigeben", Agent setzt fort. Kein App-Wechsel, kein Copy-Paste.</p>
+      </article>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>05 · Unter der Haube</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 23 — CONTENT · Möglichkeiten
+       ============================================================ -->
+  <section data-label="28 Möglichkeiten">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="slide-header">
+      <p class="eyebrow">Möglichkeiten</p>
+      <h1 class="slide-title">Was du heute mit omadia baust.</h1>
+    </div>
+
+    <ul class="b5-bullets" style="margin-top: var(--gap-section);">
+      <li><strong>HR-Agent in Teams.</strong> Onboarding, Urlaub, Spesen — liest aus deinem HR-System.</li>
+      <li><strong>Buchhaltungs-Agent in Telegram.</strong> Rechnungen erfassen, Konten abgleichen.</li>
+      <li><strong>Wissens-Agent im Web.</strong> Confluence + M365 durchsuchen, Quellen zitieren.</li>
+      <li><strong>Orchestrator-Agent.</strong> „Onboarding" delegiert an HR, IT, Compliance — ein Trigger.</li>
+      <li><strong>Dein eigener Agent in einer Stunde.</strong> Plugin wählen, Persona schreiben, deployen.</li>
+    </ul>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span>05 · Unter der Haube</span>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SLIDE 24 — CLOSING · Contact
+       ============================================================ -->
+  <section data-label="29 Contact" class="slide-contact">
+    <img class="deck-logo" src="assets/byte5-logo-cyan.png" alt="byte5" />
+
+    <div class="contact-stack">
+      <p class="eyebrow">Kontakt</p>
+      <h2>Lass uns reden.</h2>
+
+      <div class="contact-details">
+        <div class="label">Web</div>
+        <div>omadia.ai</div>
+
+        <div class="label">E-Mail</div>
+        <div>hello@omadia.ai</div>
+
+        <div class="label">Adresse</div>
+        <div>byte5 GmbH · Speicherstraße 1 · 60327 Frankfurt am Main</div>
+      </div>
+    </div>
+
+    <div class="speech-bubble">
+      <div class="bubble-tail"></div>
+      <div class="bubble-main">Pilot<br/>starten</div>
+    </div>
+
+    <div class="deck-footer">
+      <span>byte5 · omadia</span>
+      <span></span>
+    </div>
+  </section>
+
+</deck-stage>
+
+</body>
+</html>

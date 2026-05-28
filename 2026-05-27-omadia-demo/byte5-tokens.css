@@ -1,0 +1,398 @@
+/* ============================================================
+   byte5 — Design Tokens
+   Source: 220721 Brand Guideline byte5 (Brand Guides 2022)
+   Corrected Apr 2026: palette split into CORE (5 colours only) and
+   EXTENDED (additional tones for charts, UI states, surfaces).
+   CORE     → byte5-Blau (#009FE3), Blau dunkel (#004B73),
+              Weiß, Schwarz, Magenta (#EA5172, accent only).
+   EXTENDED → Grey scale, chart series 3–5 (Teal/Plum), semantic,
+              surface gradients. These are NOT part of the official
+              byte5 brand palette — they are system-level tokens
+              derived to be harmonious with the core.
+   Legacy   → Orange is deprecated (2022 guideline entry only).
+   Variable-name note: historical aliases `--byte5-cyan` (=Blau)
+   and `--byte5-blau` (=Blau dunkel) are kept for backward compat
+   with existing HTML; the canonical names are `--b5-blau` and
+   `--b5-blau-dunkel`. Prefer those in new code.
+   ============================================================ */
+
+/* ----- Web fonts ----- */
+@font-face {
+  font-family: 'Days One';
+  src: url('./fonts/DaysOne-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Avenir Next is a licensed Linotype face; the .ttc ships as the
+   internal/print master. For web we layer Nunito Sans as the closest
+   free fallback so designs render reliably in the browser without
+   distributing a paid font. Swap back to local Avenir Next where
+   licensed (Adobe Fonts / Linotype). */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;900&display=swap');
+
+:root {
+  /* ============================================================
+     CORE PALETTE — byte5 brand system (official)
+     These five colours, and nothing else, form the byte5 brand.
+     ============================================================ */
+
+  --b5-blau:           #009FE3;   /* byte5-Blau  — PRIMARY brand colour, Pantone Cyan C */
+  --b5-blau-dunkel:    #004B73;   /* Blau dunkel — secondary brand colour, Pantone 3025 C */
+  --b5-weiss:          #FFFFFF;
+  --b5-schwarz:        #000000;
+  --b5-magenta:        #EA5172;   /* Akzent — STRICT: signature colon marker at
+                                     start of an emphasised line, the speech-bubble
+                                     CTA, and defined badge/accent surfaces.
+                                     NEVER on letters, words, drop-caps, versals,
+                                     or colons inside/after words. */
+
+  /* Backward-compat aliases (legacy variable names). Prefer the
+     canonical --b5-* names above in new code. */
+  --byte5-blau:        var(--b5-blau-dunkel);  /* NOTE: historical name mapped to the DARK blue */
+  --byte5-cyan:        var(--b5-blau);         /* NOTE: what was called "Cyan" is actually byte5-Blau */
+  --byte5-white:       var(--b5-weiss);
+  --byte5-black:       var(--b5-schwarz);
+  --byte5-magenta:     var(--b5-magenta);
+
+  /* Print-reference only (pure CMYK) */
+  --byte5-cyan-print:  #00FFFF;   /* reference only, do NOT use on screen */
+
+  /* Deprecated — retained only for archival designs. DO NOT use. */
+  --legacy-orange:     #F18536;   /* REMOVED from the active palette in 2024 */
+
+  /* ============================================================
+     EXTENDED PALETTE — system tokens (not brand-core)
+     Grey scale, additional chart series, and semantic roles.
+     Use freely; just don't present them as "brand colours".
+     ============================================================ */
+
+  /* Functional grayscale, derived to harmonise with --b5-blau-dunkel */
+  --gray-50:           #F4F7FA;
+  --gray-100:          #E8EEF3;
+  --gray-200:          #D3DDE5;
+  --gray-300:          #B4C2CD;
+  --gray-400:          #8A99A6;
+  --gray-500:          #5F6E7B;
+  --gray-600:          #3F4D59;
+  --gray-700:          #283540;
+  --gray-800:          #15212B;
+  --gray-900:          #0A1420;
+
+  /* Soft surface gradients — used on web hero / contact areas */
+  --surface-gradient:
+      linear-gradient(180deg, #F1F5F9 0%, #E3ECF3 100%);
+  --surface-gradient-cyan:
+      radial-gradient(120% 80% at 0% 0%, #B7E5F8 0%, #E8F2F8 60%, #F4F7FA 100%);
+
+  /* ============================================================
+     SEMANTIC COLOR ROLES
+     ============================================================ */
+  --bg:                var(--b5-weiss);
+  --bg-soft:           var(--gray-50);
+  --bg-elevated:       var(--b5-weiss);
+  --bg-inverse:        var(--b5-blau-dunkel); /* dark surfaces (footer, inverse sections) use Blau dunkel per brand guide */
+  --bg-tinted:         var(--surface-gradient);
+
+  --fg:                var(--b5-blau-dunkel);
+  --fg-strong:         var(--b5-blau-dunkel);
+  --fg-muted:          var(--gray-500);
+  --fg-subtle:         var(--gray-400);
+  --fg-on-dark:        var(--b5-weiss);
+  --fg-on-accent:      var(--b5-weiss);
+
+  --accent:            var(--b5-blau);      /* byte5-Blau is the interactive accent */
+  --accent-fg:         var(--b5-weiss);
+  --accent-hover:      #0086C0;              /* byte5-Blau @ -10% L */
+  --accent-press:      #006C9C;              /* byte5-Blau @ -20% L */
+
+  --highlight:         var(--b5-magenta);   /* the ":" pop colour */
+  --highlight-fg:      var(--b5-weiss);
+
+  --border:            var(--gray-200);
+  --border-strong:     var(--gray-300);
+  --divider:           rgba(0, 75, 115, 0.12);
+  --divider-on-dark:   rgba(255, 255, 255, 0.16);
+
+  /* Semantic UI states — EXTENDED palette, not brand-core */
+  --success:           #15A06B;
+  --warning:           #E0A82E;
+  --danger:            #D9354C;
+  --info:              var(--b5-blau);
+
+  /* ============================================================
+     CHART / DATA-VIZ PALETTE
+     Series 1 + 2 are CORE brand colours. Series 3 is the Magenta
+     accent (use with restraint). Series 4 + 5 are EXTENDED palette
+     — harmonic companions derived specifically for charts. They are
+     NOT part of the byte5 brand palette and MUST NOT be used as UI
+     chrome, backgrounds, or headline colours. They exist only to
+     extend the chart palette beyond three series when unavoidable.
+     Preferred: keep charts to ≤ 3 series (core colours only); if
+     more are genuinely needed, use 4 + 5 in order.
+     ============================================================ */
+  --chart-1:  #009FE3;   /* byte5-Blau   — PRIMARY series (core) */
+  --chart-2:  #004B73;   /* Blau dunkel  — secondary series (core) */
+  --chart-3:  #EA5172;   /* Magenta      — highlight / focus series (core accent, use sparingly) */
+  --chart-4:  #2FB3A0;   /* Teal         — EXTENDED, harmonic bridge blau↔green */
+  --chart-5:  #6B4E9B;   /* Plum         — EXTENDED, harmonic bridge blau↔magenta */
+
+  /* Grey series — use when a categorical palette exceeds 5 but
+     data warrants monochrome differentiation (EXTENDED). */
+  --chart-gray-1: #3F4D59;  /* --gray-600 */
+  --chart-gray-2: #8A99A6;  /* --gray-400 */
+  --chart-gray-3: #B4C2CD;  /* --gray-300 */
+
+  /* Structural chart tokens — axes, grid, labels */
+  --chart-axis:          var(--gray-300);          /* axis line */
+  --chart-gridline:      var(--gray-100);          /* minor grid */
+  --chart-gridline-zero: var(--gray-300);          /* zero / baseline emphasis */
+  --chart-tick:          var(--gray-400);          /* tick marks */
+  --chart-axis-label:    var(--gray-600);          /* numbers on axes */
+  --chart-title:         var(--b5-blau-dunkel);    /* chart title */
+  --chart-subtitle:      var(--gray-500);          /* chart subtitle / caption */
+  --chart-legend-label:  var(--gray-700);          /* series labels */
+  --chart-annotation:    var(--b5-magenta);        /* callout / annotation line */
+  --chart-bg:            var(--b5-weiss);          /* plot area */
+  --chart-bg-soft:       var(--gray-50);           /* report page bg */
+  --chart-value-label:   var(--gray-600);          /* value labels above bars — NEVER series colour */
+
+  /* Sequential / heatmap ramp (single-hue, Blau-biased) */
+  --chart-seq-1: #E6F5FC;
+  --chart-seq-2: #B7E1F4;
+  --chart-seq-3: #7CC8EB;
+  --chart-seq-4: #38AEE1;
+  --chart-seq-5: #009FE3;
+  --chart-seq-6: #006C9C;
+  --chart-seq-7: #004B73;
+
+  /* Diverging ramp (Magenta ↔ Blau) — for signed values */
+  --chart-div-neg-3: #B8264A;
+  --chart-div-neg-2: #EA5172;
+  --chart-div-neg-1: #F6A5B6;
+  --chart-div-zero:  #F4F7FA;
+  --chart-div-pos-1: #A6DEF5;
+  --chart-div-pos-2: #38AEE1;
+  --chart-div-pos-3: #006C9C;
+
+  /* ============================================================
+     TYPOGRAPHY — FAMILIES
+     ============================================================ */
+  --font-display:  'Days One', 'Nunito Sans', system-ui, sans-serif;     /* SPARING use, headlines only.
+
+     LOGO RULE — read carefully:
+       The official byte5 logo is the supplied lockup file (Signet + "byte5"
+       wordmark) and MUST be placed as that image. Do NOT recreate it by
+       pairing the signet PNG with the word "byte5" typeset in Days One —
+       the result is forbidden, even when the typeface matches.
+
+       Signet and wordmark are ONE form in ONE colour. Allowed colours are:
+         - byte5-Blau  #009FE3
+         - Weiß        #FFFFFF
+         - Schwarz     #000000
+       Any two-tone lockup (e.g. cyan signet + dark-blue "byte5",
+       white signet + cyan "byte5", magenta anywhere) is forbidden. */
+  --font-text:     'Avenir Next', 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:     'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Type scale (px). Web baseline 16px. */
+  --fs-12: 0.75rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-32: 2rem;
+  --fs-40: 2.5rem;
+  --fs-48: 3rem;
+  --fs-64: 4rem;
+
+  /* Line heights */
+  --lh-tight:   1.1;
+  --lh-snug:    1.25;
+  --lh-normal:  1.5;
+  --lh-loose:   1.7;
+
+  --tracking-tight:  -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.04em;
+  --tracking-caps:   0.08em;
+
+  /* ============================================================
+     SPACING / RADII / SHADOWS / MOTION
+     ============================================================ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* Radii — byte5 strongly favours fully rounded pill shapes
+     (circles in the logo, round CTA buttons, social bubbles).
+     Mid-radius is rare; choose pill OR small. */
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --radius-pill: 9999px;
+  --radius-circle: 50%;
+
+  /* Shadows — soft, low-contrast. Used for floating CTAs + circular
+     social buttons. Avoid hard drop shadows. */
+  --shadow-xs: 0 1px 2px rgba(0, 75, 115, 0.06);
+  --shadow-sm: 0 2px 6px rgba(0, 75, 115, 0.08);
+  --shadow-md: 0 8px 24px rgba(0, 75, 115, 0.10);
+  --shadow-lg: 0 18px 40px rgba(0, 75, 115, 0.14);
+  --shadow-cta: 0 12px 28px rgba(0, 159, 227, 0.30);
+  --shadow-magenta: 0 12px 28px rgba(234, 81, 114, 0.28);
+
+  /* Hybrid badge — radial cyan→magenta. Used on event cards whose
+     format is both remote and on-site ("Hybrid"). Source: Figma
+     "byte Website Events", PreviewBox badge override. */
+  --badge-hybrid-gradient:
+      radial-gradient(circle at 30% 30%,
+        var(--b5-blau) 0%,
+        var(--b5-blau) 35%,
+        var(--b5-magenta) 100%);
+
+  /* Motion — gentle, never bouncy.
+     The brand reads as professional first, playful second. */
+  --ease-out:    cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:    140ms;
+  --dur-base:    220ms;
+  --dur-slow:    360ms;
+}
+
+/* ============================================================
+   SEMANTIC TYPE STYLES
+   ============================================================ */
+
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+body, .b5-text {
+  font-family: var(--font-text);
+  font-size: var(--fs-16);
+  line-height: var(--lh-normal);
+  color: var(--fg);
+  font-weight: 400;
+}
+
+/* Display (Days One) — sparing, headline only.
+   Days One has no weight variants; size + colour create hierarchy. */
+.b5-h1, h1.b5 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg-strong);
+  margin: 0 0 var(--space-5);
+}
+
+.b5-h2, h2.b5 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+  margin: 0 0 var(--space-4);
+}
+
+/* H3+ shifts back to Avenir / Nunito Sans bold for density. */
+.b5-h3, h3.b5 {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: var(--fs-24);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+  margin: 0 0 var(--space-3);
+}
+
+.b5-h4, h4.b5 {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: var(--fs-18);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+  margin: 0 0 var(--space-2);
+}
+
+.b5-eyebrow {
+  font-family: var(--font-text);
+  font-weight: 700;
+  font-size: var(--fs-14);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* The signature "Doppelpunkt" — magenta colon used to introduce a phrase.
+   Per brand guide the ":" is Avenir Next Heavy in the highlight colour.
+
+   STRICT USAGE — read carefully:
+     ALLOWED:
+       - Standalone marker at the START of an emphasised line, separated by a
+         word-space from the following text. Like a typographic bullet.
+     FORBIDDEN:
+       - Magenta colour on any letter, word, drop-cap, initial, or versal.
+       - Magenta on a colon inside a word (e.g. gendered "Expert:innen" — the
+         colon stays in the surrounding text colour).
+       - Magenta on a colon AFTER a word ("Lösungen:" as a label separator).
+       - Magenta on punctuation other than the leading marker.
+     The magenta colon is a structural device, not a highlight tool. */
+.b5-colon {
+  color: var(--highlight);
+  font-weight: 900;
+  margin-right: 0.4em;
+}
+
+.b5-lead {
+  font-family: var(--font-text);
+  font-size: var(--fs-18);
+  line-height: var(--lh-loose);
+  color: var(--fg);
+  font-weight: 600;
+}
+
+p.b5, .b5-p {
+  font-family: var(--font-text);
+  font-size: var(--fs-16);
+  line-height: var(--lh-loose);
+  color: var(--gray-700);
+  font-weight: 400;
+}
+
+.b5-small, small.b5 {
+  font-size: var(--fs-14);
+  color: var(--fg-muted);
+}
+
+.b5-caption {
+  font-size: var(--fs-12);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+code.b5, .b5-code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--gray-100);
+  color: var(--fg-strong);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-xs);
+}
+
+a.b5 {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+a.b5:hover { color: var(--accent-hover); }
