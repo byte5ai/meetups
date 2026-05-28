@@ -6,6 +6,7 @@ on:
     paths:
       - '*/slides/**'
       - '2026-05-27-prompts-and-agents/**'
+      - '2026-05-27-omadia-demo/**'
       - 'index.html'
       - 'assets/**'
       - '.github/workflows/slides.yml'
@@ -110,6 +111,18 @@ jobs:
           mkdir -p ../dist/2026-05-27-prompts-and-agents/node_modules/reveal.js
           cp -R node_modules/reveal.js/dist node_modules/reveal.js/plugin \
                 ../dist/2026-05-27-prompts-and-agents/node_modules/reveal.js/
+
+      - name: Build 2026-05-27-omadia-demo (self-contained HTML)
+        # Self-contained deck: deck.html + deck-stage.js + byte5-tokens.css
+        # + assets/fonts. Nothing to build — copy the static files into
+        # dist/. The deck file is deck.html; publish it as index.html so
+        # the directory URL serves it (consistent with the other decks).
+        working-directory: 2026-05-27-omadia-demo
+        run: |
+          mkdir -p ../dist/2026-05-27-omadia-demo
+          cp deck.html ../dist/2026-05-27-omadia-demo/index.html
+          cp deck-stage.js byte5-tokens.css ../dist/2026-05-27-omadia-demo/
+          cp -R assets fonts ../dist/2026-05-27-omadia-demo/
 
       - uses: actions/upload-pages-artifact@v4
         with:
